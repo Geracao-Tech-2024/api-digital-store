@@ -4,15 +4,14 @@ const user = require('/models/User');
 
 const router = express.Router(); 
 
-router.post('/', async (req,res) =>{
-    try{
-        const {firstname,email,password} = req.body;
-        const user = new User({firstname, email , password});
-        await user.save();
-        res.status(201)
-        console.log("Usuario Criado Com Sucesso")
-    } catch(erro){
-        res.status(500)
-        console.log("Erro")
+
+router.get('./User/:id', (req,res) =>{
+    const{id} = req.params;
+    const user = Users.find(user => user.id == id);
+    if(user){
+        res.status(200).json(user);
+    }else{
+        res.status(400).send("NOT FOUND!");
     }
-})
+
+});
