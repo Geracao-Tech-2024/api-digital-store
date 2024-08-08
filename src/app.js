@@ -16,7 +16,9 @@ app.use(cors({ origin: "*" }));
 
 // arquivos referente a rotas
 const routeUsuarios = require('./routes/routeUsuarios');
+const routeCategory = require('./routes/routeCategory');
 app.use('/usuarios', routeUsuarios);
+app.use('/v1/category', routeCategory);
 
 app.use('/*', (_, resp)=> resp.send('Error404'))
 
