@@ -9,10 +9,10 @@ router.post('/', async (req,res) =>{
         const {firstname,email,password} = req.body;
         const user = new User({firstname, email , password});
         await user.save();
-        res.status(201)
-        console.log("Usuario Criado Com Sucesso")
+        res.status(201);
+        console.log("Usuario Criado Com Sucesso");
     } catch(erro){
-        res.status(500)
-        console.log("Erro")
+        res.status(500);
+        console.log("Erro");
     }
 })
