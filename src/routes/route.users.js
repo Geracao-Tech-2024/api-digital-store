@@ -11,7 +11,7 @@ router.get('./User/:id', (req,res) =>{
     if(user){
         res.status(200).json(user);
     }else{
-        res.status(400).send("NOT FOUND");
+        res.status(400).send("NOT FOUND!");
     }
 
 });
