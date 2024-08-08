@@ -27,9 +27,10 @@ class userController {
 
     deleteCategory(requisicao, resposta) {
         try {
-            
-            let data = categoryServices.deleteCategory(requisicao);
-            resposta.status(204).send('No content')
+            const data = categoryServices.deleteCategory(requisicao);
+            // resposta.send('No content');
+            resposta.json({message:'', statusCode: 204})
+            resposta.status(204);
             
         } catch (erro) {
             resposta.status(500).send(erro.message)
