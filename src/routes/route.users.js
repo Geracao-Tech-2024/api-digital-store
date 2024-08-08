@@ -13,6 +13,6 @@ router.post('/', async (req,res) =>{
         console.log("Usuario Criado Com Sucesso");
     } catch(erro){
         res.status(500);
-        console.log("Erro");
+        console.log("Erro em Criar Usuario");
     }
 })
