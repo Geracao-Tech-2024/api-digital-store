@@ -1,9 +1,19 @@
+const user = require('../models/User')
+
 class UsuarioServices {
     getUsuarios(){
         return 'todos os usuarios'
     }
-    getUsuario(){
-        return 'apenas um usuario'
+    
+    getUsuario(req){
+      const {id} = req.params.id;
+      const project = user.findById(id);
+      if (user === null){
+        return "NOT FOUND"
+      
+      }else{
+        // console.log();
+      }
     }
     postUsuario(){
         return 'usuario criado'
