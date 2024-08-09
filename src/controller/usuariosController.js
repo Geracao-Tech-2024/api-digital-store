@@ -16,13 +16,17 @@ class userController {
             resposta.status(404).send(erro.message)
         }
     }
+
     setUsuario(requisicao, resposta) {
-        try {
-            resposta.status(201).send(usuarioServices.postUsuario())
-        } catch (erro) {
-            resposta.status(500).send(erro.message)
-        }
+        usuarioServices.postUsuario(requisicao)
+            .then(result => {
+                resposta.status(result.status).send(result.message);
+            })
+            .catch(error => {
+                resposta.status(500).send(error.message);
+            });
     }
+    
     deleteUsuario(requisicao, resposta) {
         try {
             resposta.status(200).send(usuarioServices.deleteUsuario())
