@@ -27,17 +27,7 @@ const User = sequelize.define('User', {
     },
 }, {
     tableName: 'users',
-    timestamps: true,
-    hooks: {
-        beforeCreate: async (user) => {
-            user.password = await bcrypt.hash(user.password, 10);
-        },
-        beforeUpdate: async (user) => {
-            if (user.changed('password')) {
-                user.password = await bcrypt.hash(user.password, 10);
-            }
-        },
-    },
+    timestamps: true
 });
 
 module.exports = User;
