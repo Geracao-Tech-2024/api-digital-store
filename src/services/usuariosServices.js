@@ -15,58 +15,51 @@ class UsuarioServices {
      return {status:'200',message: "ok"}
   }
 
-  postUsuario(req, res) {
-    return new Promise((resolve, reject) => {
+  async postUsuario(req, res) {
+    try {
       const { firstname, surname, email, password, confirmPassword } = req.body;
 
       console.log('Request Body:', req.body);
 
       // Validação dos campos obrigatórios
       if (!firstname || !surname || !email || !password || !confirmPassword) {
-        return resolve(res.status(400).json({ message: 'Todos os campos são obrigatórios' }));
+        return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
       }
 
       // Validação da correspondência das senhas
       if (password !== confirmPassword) {
-        return resolve(res.status(400).json({ message: 'As senhas não coincidem' }));
+        return res.status(400).json({ message: 'As senhas não coincidem' });
       }
 
       // Verificar se o usuário já existe
-      User.findOne({ where: { email } })
-        .then(existingUser => {
-          if (existingUser) {
-            return resolve(res.status(400).json({ message: 'Email já está em uso' }));
-          }
+      const existingUser = await User.findOne({ where: { email } });
 
-          // Codificar a senha antes de salvar
-          this.passwordEncoded(password)
-            .then(hashedPassword => {
-              // Criar um novo usuário
-              const newUser = new User({
-                firstname,
-                surname,
-                email,
-                password: hashedPassword,
-              });
+      if (existingUser) {
+        return res.status(400).json({ message: 'Email já está em uso' });
+      }
 
-              // Salvar o usuário no banco de dados
-              return newUser.save()
-                .then(() => resolve(res.status(201).json({ message: 'Usuário criado com sucesso' })))
-                .catch(error => {
-                  console.error('Erro ao criar o usuário:', error);
-                  resolve(res.status(500).json({ message: 'Erro ao criar o usuário', details: error.message }));
-                });
-            })
-            .catch(error => {
-              console.error('Erro ao codificar a senha:', error);
-              resolve(res.status(500).json({ message: 'Erro ao codificar a senha', details: error.message }));
-            });
-        })
-        .catch(error => {
-          console.error('Erro ao verificar o usuário:', error);
-          resolve(res.status(500).json({ message: 'Erro ao verificar o usuário', details: error.message }));
-        });
-    });
+      // Codificar a senha antes de salvar
+      const hashedPassword = await this.passwordEncoded(password);
+
+      // Criar um novo usuário
+      const newUser = new User({
+        firstname,
+        surname,
+        email,
+        password: hashedPassword,
+      });
+
+      // Salvar o usuário no banco de dados
+      await newUser.save();
+
+      // Responder com sucesso
+      return res.status(201).json({ message: 'Usuário criado com sucesso' });
+
+    } catch (error) {
+      // Tratar erros e responder com uma mensagem de erro
+      console.error('Erro ao criar o usuário:', error);
+      return res.status(500).json({ message: 'Erro ao criar o usuário', details: error.message });
+    }
   }
 
   
@@ -78,12 +71,13 @@ class UsuarioServices {
     return "usuario deletado";
   }
   // let senha_criptografada = passwordEncoded();
-  async passwordEncoded(password){
-    return await bcrypt.hash( password, 7);
+  // Função para codificar a senha
+  async passwordEncoded(password) {
+    return await bcrypt.hash(password, 7);
   }
-  //                                        senha             hash
-  // let compare_senha = passwordCompare( 1223123123 , jlkjlukhk123iojheskzça)
-  async passwordCompare(password, hashPassword){
+
+  // Função para comparar a senha fornecida com o hash armazenado
+  async passwordCompare(password, hashPassword) {
     return await bcrypt.compare(password, hashPassword);
   }
 }
