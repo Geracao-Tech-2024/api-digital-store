@@ -10,8 +10,8 @@ class userController {
     }
     getUsuario(requisicao, resposta) {
         try {
-            let search = resposta.status(200).send(getUsuario(requisicao))
-            return resposta.send(search)
+            let busca = resposta.status(200).send(usuarioServices.getUsuario(requisicao, resposta))
+            return resposta.send(busca)
         } catch (erro) {
             resposta.status(404).send(erro.message)
         }

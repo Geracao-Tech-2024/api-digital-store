@@ -4,7 +4,7 @@ const Controller = require('./../controller/usuariosController');
 const express = require('express');
 const usuarios = express();
 
-usuarios.get('/', Controller.getUsuario);
+usuarios.get('/', Controller.getAllUsuarios);
 usuarios.get('/:id', Controller.getUsuario);
 usuarios.post('/', Controller.setUsuario);
 usuarios.put('/:id', Controller.updateUsuario);
