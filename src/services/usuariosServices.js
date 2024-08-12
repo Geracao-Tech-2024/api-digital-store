@@ -6,15 +6,14 @@ class UsuarioServices {
     return "todos os usuarios";
   }
 
-  async getUsuario(req, res) {
+  async getUsuario(req) {
     const user = await User.findByPk(req.params.id);
     console.log(user)
-    if (!user || user == {}) {
-        return res.status(404).json({ message: 'Usuário não encontrado' });
+    if (!user || user.id ) {
+        return {status: '404' ,message: 'Usuário não encontrado' };
     }
-     res.status(200).json(user);
+     return {status:'200',message: "ok"}
   }
-
 
   postUsuario(req) {
     return new Promise((resolve, reject) => {

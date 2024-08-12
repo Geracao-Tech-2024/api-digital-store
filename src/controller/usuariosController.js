@@ -8,12 +8,12 @@ class userController {
             resposta.status(500).send(erro.message)
         }
     }
-    getUsuario(requisicao, resposta) {
+    async getUsuario(requisicao, resposta) {
         try {
-            let busca = resposta.status(200).send(usuarioServices.getUsuario(requisicao, resposta))
-            return resposta.send(busca)
+            let busca = await usuarioServices.getUsuario(requisicao)
+            resposta.status(busca.status).send(busca.message)
         } catch (erro) {
-            resposta.status(404).send(erro.message)
+            resposta.status(500).send(erro)
         }
     }
     setUsuario(requisicao, resposta) {
