@@ -16,43 +16,61 @@ class UsuarioServices {
   }
 
 
-  postUsuario(req) {
+  postUsuario(req, res) {
     return new Promise((resolve, reject) => {
-        
-        const { firstname, surname, email, password, confirmPassword } = req.body;
+      const { firstname, surname, email, password, confirmPassword } = req.body;
 
-       
-        console.log('Request Body:', req.body);
+      console.log('Request Body:', req.body);
 
-        
-        if (!firstname || !surname || !email || !password || !confirmPassword) {
-            return resolve({ message: 'Todos os campos são obrigatórios', status: 400 });
-        }
-        if (password !== confirmPassword) {
-            return resolve({ message: 'As senhas não coincidem', status: 400 });
-        }
+      // Validação dos campos obrigatórios
+      if (!firstname || !surname || !email || !password || !confirmPassword) {
+        return resolve(res.status(400).json({ message: 'Todos os campos são obrigatórios' }));
+      }
 
-        
-        User.findOne({ email })
-            .then(existingUser => {
-                if (existingUser) {
-                    return resolve({ message: 'Email já está em uso', status: 400 });
-                }
+      // Validação da correspondência das senhas
+      if (password !== confirmPassword) {
+        return resolve(res.status(400).json({ message: 'As senhas não coincidem' }));
+      }
 
-                const newUser = new User({
-                    firstname,
-                    surname,
-                    email,
-                    password, 
+      // Verificar se o usuário já existe
+      User.findOne({ where: { email } })
+        .then(existingUser => {
+          if (existingUser) {
+            return resolve(res.status(400).json({ message: 'Email já está em uso' }));
+          }
+
+          // Codificar a senha antes de salvar
+          this.passwordEncoded(password)
+            .then(hashedPassword => {
+              // Criar um novo usuário
+              const newUser = new User({
+                firstname,
+                surname,
+                email,
+                password: hashedPassword,
+              });
+
+              // Salvar o usuário no banco de dados
+              return newUser.save()
+                .then(() => resolve(res.status(201).json({ message: 'Usuário criado com sucesso' })))
+                .catch(error => {
+                  console.error('Erro ao criar o usuário:', error);
+                  resolve(res.status(500).json({ message: 'Erro ao criar o usuário', details: error.message }));
                 });
-
-                return newUser.save()
-                    .then(() => resolve({ message: 'Usuário criado com sucesso', status: 201 }))
-                    .catch(error => resolve({ message: 'Erro ao criar o usuário', status: 500, details: error.message }));
             })
-            .catch(error => resolve({ message: 'Erro ao criar o usuário', status: 500, details: error.message }));
+            .catch(error => {
+              console.error('Erro ao codificar a senha:', error);
+              resolve(res.status(500).json({ message: 'Erro ao codificar a senha', details: error.message }));
+            });
+        })
+        .catch(error => {
+          console.error('Erro ao verificar o usuário:', error);
+          resolve(res.status(500).json({ message: 'Erro ao verificar o usuário', details: error.message }));
+        });
     });
-}
+  }
+
+  
 
   putUsuario() {
     return "usuario atualizado";
