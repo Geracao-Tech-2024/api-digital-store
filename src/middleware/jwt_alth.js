@@ -2,10 +2,10 @@ require('dotenv').config();
 const jwt = require('jsonwebtoken')
 
 class JWToken {
-    #SECRET = process.env.SECRET_JWT;
+
     verifyJWT(req, resp, next) {
         const token = req.headers['athenticate'];
-        jwt.verify(token, this.#SECRET, (err, decoded) => {
+        jwt.verify(token, process.env.SECRET_JWT, (err, decoded) => {
             if (err) { return resp.status(401).end() };
     
             req.userId = decoded.userId;
@@ -13,8 +13,8 @@ class JWToken {
         })
     }
     
-    createTokenJWT(req, res) {
-        jwt.sign({ userId: id_user }, this.#SECRET, { expiresIn: '1h' })
+    async createTokenJWT(password) {
+        return await jwt.sign({ userId: password }, process.env.SECRET_JWT , { expiresIn: '1h' });
     }
 }
 

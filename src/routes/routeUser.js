@@ -10,6 +10,6 @@ usuarios.post('/', Controller.setUsuario);
 usuarios.put('/:id', Controller.updateUsuario);
 usuarios.patch('/:id', Controller.updateUsuario);
 usuarios.delete('/:id', Controller.deleteUsuario);
-usuaarios.post('/token', Controller.gerarToken)
+usuarios.post('/token', Controller.gerarToken)
 
 module.exports = usuarios;

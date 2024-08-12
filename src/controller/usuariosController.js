@@ -37,9 +37,10 @@ class userController {
             resposta.status(500).send(erro.message)
         }
     }
-    gerarToken(requisicao, resposta){
+    async gerarToken(requisicao, resposta){
         try {
-            resposta.status(200).send(usuarioServices.gerarToken())
+            let resp = await usuarioServices.gerarToken(requisicao);
+            resposta.status(resp.status).send(resp.messege)
         } catch (erro) {
             resposta.status(500).send(erro.message)
         }
