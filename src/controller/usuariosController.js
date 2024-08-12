@@ -12,6 +12,7 @@ class userController {
         try {
             let busca = await usuarioServices.getUsuario(requisicao)
             resposta.status(busca.status).send(busca.message)
+            
         } catch (erro) {
             resposta.status(500).send(erro)
         }
@@ -39,3 +40,4 @@ class userController {
     }
 }
 module.exports = new userController();
+
