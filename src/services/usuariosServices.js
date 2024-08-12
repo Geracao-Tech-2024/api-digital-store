@@ -7,12 +7,12 @@ class UsuarioServices {
   }
 
   async getUsuario(req, res) {
-    // const user = await User.findByPk(req.params.id);
-    // console.log(user)
-    // if (!user || user == {}) {
-    //     return res.status(404).json({ message: 'Usuário não encontrado' });
-    // }
-    //  res.status(200).json(user);
+    const user = await User.findByPk(req.params.id);
+    console.log(user)
+    if (!user || user == {}) {
+        return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+     res.status(200).json(user);
   }
 
 
