@@ -13,7 +13,7 @@ class JWToken {
         })
     }
     
-    createTokenJWT(id_user) {
+    createTokenJWT(req, res) {
         jwt.sign({ userId: id_user }, this.#SECRET, { expiresIn: '1h' })
     }
 }

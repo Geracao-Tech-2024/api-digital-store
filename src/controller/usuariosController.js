@@ -37,5 +37,12 @@ class userController {
             resposta.status(500).send(erro.message)
         }
     }
+    gerarToken(requisicao, resposta){
+        try {
+            resposta.status(200).send(usuarioServices.gerarToken())
+        } catch (erro) {
+            resposta.status(500).send(erro.message)
+        }
+    }
 }
 module.exports = new userController();
