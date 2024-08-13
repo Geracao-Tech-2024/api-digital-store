@@ -2,21 +2,24 @@
 const express = require('express');
 const app = express();
 
+// classe de middleware do JWT
+const jwt_alth = require('./middleware/jwt_alth');
 
 const Database = require('./config/database');
 const cors = require("cors");
 
 
-// Transformando o corpo da requisição em JSON
 // Liberando o uso da API a todos os IP's (para fins de exemplo)
-app.use(express.json());
 app.use(cors({ origin: "*" }));
 
 
 
+// Middleware de Body Parsing
+app.use(express.json());
+
 // arquivos referente a rotas
 const routeUsuarios = require('./routes/routeUser');
-app.use('/v1/user', routeUsuarios);
+app.use('/v1/user',routeUsuarios);
 
 
 app.use('/*', (_, resp)=> resp.send('Error404'))
