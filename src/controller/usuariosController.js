@@ -18,13 +18,14 @@ class userController {
         }
     }
 
-    setUsuario(req, res) {
-        // Passar req e res para o serviço
-        usuarioServices.postUsuario(req, res)
-          .catch(error => {
-            // Tratar erros não esperados
-            res.status(500).send(error.message);
-          });
+    async setUsuario(req, res) {
+        try {
+          const result = await usuarioServices.postUsuario(req, res);
+          
+        } catch (error) {
+          
+          res.status(500).send('Erro ao criar usuário');
+        }
       }
       
     deleteUsuario(requisicao, resposta) {
