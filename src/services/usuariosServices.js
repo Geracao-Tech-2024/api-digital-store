@@ -12,10 +12,10 @@ class UsuarioServices {
   async getUsuario(req) {
     let {id} = req.params;
     const user = await User.findByPk(id);
-    console.log(user)
     
     if (!user || user == {}) {
       return { status: '404', message: "Usuário não encontrado" };
+
     }else{
       const dados = {
         id: user.id,
@@ -23,7 +23,6 @@ class UsuarioServices {
         surname: user.surname,
         email: user.email
       };
-
 
       return {status : '200', message: dados}
     }
