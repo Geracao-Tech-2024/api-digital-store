@@ -4,7 +4,8 @@ const jwt = require('jsonwebtoken')
 class JWToken {
 
     verifyJWT(req, resp, next) {
-        const token = req.headers['athenticate'];
+        let headers = req.headers['Authorization'];
+        const token= headers.split(' ')[1]; 
         jwt.verify(token, process.env.SECRET_JWT, (err, decoded) => {
             if (err) { return resp.status(401).end() };
     
