@@ -10,79 +10,83 @@ class UsuarioServices {
   }
 
   async getUsuario(req) {
-    let {id} = req.params;
-    const user = await User.findByPk(id);
-    
-    if (!user || user == {}) {
-      return { status: '404', message: "Usuário não encontrado" };
+    const user = await User.findByPk(req.params.id);
 
+    if (!user) {
+      return { status: 404, message: "Usuário não encontrado" };
     }else{
-      const dados = {
-        id: user.id,
-        firstname: user.firstname,
-        surname: user.surname,
-        email: user.email
-      };
-
-      return {status : '200', message: dados}
+      return {status:'200',message: 'Usuario Encontrado Com Sucesso'}
     }
   }
 
-  async postUsuario(req, res) {
-    try {
+  postUsuario(req) {
+    return new Promise((resolve, reject) => {
       const { firstname, surname, email, password, confirmPassword } = req.body;
-  
-  
+
+      console.log("Request Body:", req.body);
+
       if (!firstname || !surname || !email || !password || !confirmPassword) {
-        return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
+        return resolve({
+          message: "Todos os campos são obrigatórios",
+          status: 400,
+        });
       }
-  
       if (password !== confirmPassword) {
-        return res.status(400).json({ message: 'As senhas não coincidem' });
+        return resolve({ message: "As senhas não coincidem", status: 400 });
       }
-  
-      const existingUser = await User.findOne({ where: { email } });
-      if (existingUser) {
-        return res.status(400).json({ message: 'Email já está em uso' });
-      }
-  
-     
-      const hashedPassword = await this.passwordEncoded(password);
-  
-      const newUser = new User({
-        firstname,
-        surname,
-        email,
-        password: hashedPassword,
-      });
-  
-     
-      await newUser.save();
-  
-     
-      return res.status(201).json({ message: 'Usuário criado com sucesso' });
-    } catch (error) {
-  
-      return res.status(500).json({ message: 'Erro ao criar o usuário', details: error.message });
-    }
+
+      User.findOne({ email })
+        .then((existingUser) => {
+          if (existingUser) {
+            return resolve({ message: "Email já está em uso", status: 400 });
+          }
+
+          const newUser = new User({
+            firstname,
+            surname,
+            email,
+            password,
+          });
+
+          return newUser
+            .save()
+            .then(() =>
+              resolve({ message: "Usuário criado com sucesso", status: 201 })
+            )
+            .catch((error) =>
+              resolve({
+                message: "Erro ao criar o usuário",
+                status: 500,
+                details: error.message,
+              })
+            );
+        })
+        .catch((error) =>
+          resolve({
+            message: "Erro ao criar o usuário",
+            status: 500,
+            details: error.message,
+          })
+        );
+    });
   }
 
 
 async putUsuario(req) {
+    const { id } = req.params;
 
-      const { id } = req.params.id;
+    try {
+        let usuario = await User.findByPk(id);
+        if (!usuario) {
+            return { message: "User not found", status: 404 };
+        }
+        await usuario.update(req.body);
+        return { message: "", status: 204 };
 
-      let usuario = User.findByPk(id)
-
-      if(usuario.id){
-
-        let resposta = await User.update(req.body, {
-          where: {
-            id: `${id}`,
-          }
-        });
-        return { message: resposta, status: 204 };
-      }
+    } catch (error) {
+        // Trate erros que possam ocorrer durante a atualização
+        return { message: "Bad Request", status: 400 };
+    }
 }
   deleteUsuario() {
     return "usuario deletado";
