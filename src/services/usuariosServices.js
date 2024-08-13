@@ -1,5 +1,6 @@
+const { JSON } = require("sequelize");
 const User = require("./../models/User");
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 
 class UsuarioServices {
   getUsuarios() {
@@ -8,61 +9,66 @@ class UsuarioServices {
 
   async getUsuario(req) {
     const user = await User.findByPk(req.params.id);
-    console.log(user)
-    if (!user || user.id ) {
-        return {status: '404' ,message: 'Usuário não encontrado' };
+
+    if (!user) {
+      return { status: 404, message: "Usuário não encontrado" };
+    }else{
+      return {status:'200',message: 'Usuario Encontrado Com Sucesso'}
     }
-     return {status:'200',message: "ok"}
   }
 
-  async postUsuario(req, res) {
-    try {
+  postUsuario(req) {
+    return new Promise((resolve, reject) => {
       const { firstname, surname, email, password, confirmPassword } = req.body;
 
-      console.log('Request Body:', req.body);
+      console.log("Request Body:", req.body);
 
-      // Validação dos campos obrigatórios
       if (!firstname || !surname || !email || !password || !confirmPassword) {
-        return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
+        return resolve({
+          message: "Todos os campos são obrigatórios",
+          status: 400,
+        });
       }
-
-      // Validação da correspondência das senhas
       if (password !== confirmPassword) {
-        return res.status(400).json({ message: 'As senhas não coincidem' });
+        return resolve({ message: "As senhas não coincidem", status: 400 });
       }
 
-      // Verificar se o usuário já existe
-      const existingUser = await User.findOne({ where: { email } });
+      User.findOne({ email })
+        .then((existingUser) => {
+          if (existingUser) {
+            return resolve({ message: "Email já está em uso", status: 400 });
+          }
 
-      if (existingUser) {
-        return res.status(400).json({ message: 'Email já está em uso' });
-      }
+          const newUser = new User({
+            firstname,
+            surname,
+            email,
+            password,
+          });
 
-      // Codificar a senha antes de salvar
-      const hashedPassword = await this.passwordEncoded(password);
-
-      // Criar um novo usuário
-      const newUser = new User({
-        firstname,
-        surname,
-        email,
-        password: hashedPassword,
-      });
-
-      // Salvar o usuário no banco de dados
-      await newUser.save();
-
-      // Responder com sucesso
-      return res.status(201).json({ message: 'Usuário criado com sucesso' });
-
-    } catch (error) {
-      // Tratar erros e responder com uma mensagem de erro
-      console.error('Erro ao criar o usuário:', error);
-      return res.status(500).json({ message: 'Erro ao criar o usuário', details: error.message });
-    }
+          return newUser
+            .save()
+            .then(() =>
+              resolve({ message: "Usuário criado com sucesso", status: 201 })
+            )
+            .catch((error) =>
+              resolve({
+                message: "Erro ao criar o usuário",
+                status: 500,
+                details: error.message,
+              })
+            );
+        })
+        .catch((error) =>
+          resolve({
+            message: "Erro ao criar o usuário",
+            status: 500,
+            details: error.message,
+          })
+        );
+    });
   }
 
-  
 
   putUsuario() {
     return "usuario atualizado";
@@ -70,13 +76,14 @@ class UsuarioServices {
   deleteUsuario() {
     return "usuario deletado";
   }
+  
   // let senha_criptografada = passwordEncoded();
-  // Função para codificar a senha
   async passwordEncoded(password) {
     return await bcrypt.hash(password, 7);
   }
-
-  // Função para comparar a senha fornecida com o hash armazenado
+  
+  //                                        senha             hash
+  // let compare_senha = passwordCompare( 1223123123 , jlkjlukhk123iojheskzça)
   async passwordCompare(password, hashPassword) {
     return await bcrypt.compare(password, hashPassword);
   }
