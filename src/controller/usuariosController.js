@@ -28,9 +28,11 @@ class userController {
         }
       }
       
-    deleteUsuario(requisicao, resposta) {
+    async deleteUsuario(req, resposta) { //amo viver 
         try {
-            resposta.status(200).send(usuarioServices.deleteUsuario())
+            let resp = await usuarioServices.deleteUsuario(req)
+        
+            resposta.status(resp.status).send(resp.message)
         } catch (erro) {
             resposta.status(500).send(erro.message)
         }

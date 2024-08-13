@@ -71,9 +71,31 @@ class UsuarioServices {
   putUsuario() {
     return "usuario atualizado";
   }
-  deleteUsuario() {
-    return "usuario deletado";
+  
+  async deleteUsuario(req) {
+    try {
+      const {id} = req.params
+      // Encontra o usuário pelo ID :)
+      const user = await User.findByPk(id); // findByPk é usado para encontrar por chave primária :)
+  
+      // Verifica se o usuário foi encontrado :)
+      if (!user) {
+        return { message: 'Usuário não encontrado', status: 404 };
+      }
+  
+      // Deleta o usuário :)
+      await User.destroy({
+        where: { id:`${id}` }
+      });
+  
+      // Retorna mensagem e status de sucesso :)
+      return { message: 'Usuário deletado com sucesso', status: 204 };
+    } catch (error) {
+      // Retorna mensagem e status de erro interno :)
+      return { message: 'Erro ao deletar usuário', status: 500 };
+    }
   }
+  
   
   // let senha_criptografada = passwordEncoded();
   async passwordEncoded(password) {
