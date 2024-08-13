@@ -87,10 +87,13 @@ async putUsuario(req) {
         // Trate erros que possam ocorrer durante a atualização
         return { message: "Bad Request", status: 400 };
     }
+
 }
   deleteUsuario() {
     return "usuario deletado";
+
   }
+  
   
   // let senha_criptografada = passwordEncoded();
   async passwordEncoded(password) {
