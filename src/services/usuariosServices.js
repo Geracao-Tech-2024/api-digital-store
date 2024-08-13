@@ -10,15 +10,24 @@ class UsuarioServices {
   }
 
   async getUsuario(req) {
-    const user = await User.findByPk(req.params.id);
-
-    if (!user) {
-      return { status: 404, message: "Usuário não encontrado" };
+    let {id} = req.params;
+    const user = await User.findByPk(id);
+    console.log(user)
+    
+    if (!user || user == {}) {
+      return { status: '404', message: "Usuário não encontrado" };
     }else{
-      return {status:'200',message: 'Usuario Encontrado Com Sucesso'}
+      const dados = {
+        id: user.id,
+        firstname: user.firstname,
+        surname: user.surname,
+        email: user.email
+      };
+
+
+      return {status : '200', message: dados}
     }
   }
-
   postUsuario(req) {
     return new Promise((resolve, reject) => {
       const { firstname, surname, email, password, confirmPassword } = req.body;

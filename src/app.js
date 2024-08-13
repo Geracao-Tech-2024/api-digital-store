@@ -19,7 +19,7 @@ app.use(express.json());
 
 // arquivos referente a rotas
 const routeUsuarios = require('./routes/routeUser');
-app.use('/v1/user', jwt_alth.verifyJWT , routeUsuarios);
+app.use('/v1/user',routeUsuarios);
 
 
 app.use('/*', (_, resp)=> resp.send('Error404'))
