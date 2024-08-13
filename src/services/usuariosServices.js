@@ -27,6 +27,7 @@ class UsuarioServices {
       return {status : '200', message: dados}
     }
   }
+
   async postUsuario(req, res) {
     try {
       const { firstname, surname, email, password, confirmPassword } = req.body;
@@ -45,10 +46,9 @@ class UsuarioServices {
         return res.status(400).json({ message: 'Email já está em uso' });
       }
   
-      // Codificar a senha antes de salvar
+     
       const hashedPassword = await this.passwordEncoded(password);
   
-      // Criar um novo usuário
       const newUser = new User({
         firstname,
         surname,
@@ -56,13 +56,13 @@ class UsuarioServices {
         password: hashedPassword,
       });
   
-      // Salvar o usuário no banco de dados
+     
       await newUser.save();
   
-      // Responder com sucesso
+     
       return res.status(201).json({ message: 'Usuário criado com sucesso' });
     } catch (error) {
-      console.error('Erro ao criar o usuário:', error);
+  
       return res.status(500).json({ message: 'Erro ao criar o usuário', details: error.message });
     }
   }

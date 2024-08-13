@@ -23,7 +23,7 @@ class userController {
           const result = await usuarioServices.postUsuario(req, res);
           
         } catch (error) {
-          console.error('Erro ao criar usuário:', error);
+          
           res.status(500).send('Erro ao criar usuário');
         }
       }
