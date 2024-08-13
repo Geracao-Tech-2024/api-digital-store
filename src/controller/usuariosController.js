@@ -41,6 +41,14 @@ class userController {
             resposta.status(500).send(erro.message)
         }
     }
+    async gerarToken(requisicao, resposta){
+        try {
+            let resp = await usuarioServices.gerarToken(requisicao);
+            resposta.status(resp.status).send(resp.messege)
+        } catch (erro) {
+            resposta.status(500).send(erro.message)
+        }
+    }
 }
 module.exports = new userController();
 

@@ -1,4 +1,6 @@
-const { JSON } = require("sequelize");
+
+const { createTokenJWT } = require("../middleware/jwt_alth");
+
 const User = require("./../models/User");
 const bcrypt = require("bcrypt");
 
@@ -87,6 +89,22 @@ class UsuarioServices {
   async passwordCompare(password, hashPassword) {
     return await bcrypt.compare(password, hashPassword);
   }
-}
 
+  async gerarToken(req) {
+    let usuario = await User.findOne({ where: { email: `${req.body.email}` } });
+    if (usuario.id && usuario.password){
+      let veriifica_senha = await this.passwordCompare(req.body.password, usuario.password);
+      if (veriifica_senha) {
+        let token = await createTokenJWT(usuario.id);
+        console.log(token)
+        return { status: 200, messege: { token: token } }
+      }else{
+        return { status: 400, messege: 'dados incorretos'}
+      }
+
+    }else{
+      return { status: 400, messege: 'dados incorretos' }
+    }
+  }
+}
 module.exports = new UsuarioServices();
