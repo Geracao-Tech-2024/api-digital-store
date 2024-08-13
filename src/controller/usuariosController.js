@@ -34,9 +34,10 @@ class userController {
             resposta.status(500).send(erro.message)
         }
     }
-    updateUsuario(requisicao, resposta) {
+    async updateUsuario(requisicao, resposta) {
         try {
-            resposta.status(200).send(usuarioServices.putUsuario())
+            let variavel = await usuarioServices.putUsuario()
+            resposta.status(variavel.status).send(variavel.message)
         } catch (erro) {
             resposta.status(500).send(erro.message)
         }

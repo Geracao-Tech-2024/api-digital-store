@@ -72,9 +72,22 @@ class UsuarioServices {
   }
 
 
-  putUsuario() {
-    return "usuario atualizado";
-  }
+async putUsuario(req) {
+
+      const { id } = req.params.id;
+
+      let usuario = User.findByPk(id)
+
+      if(usuario.id){
+
+        let resposta = await User.update(req.body, {
+          where: {
+            id: `${id}`,
+          }
+        });
+        return { message: resposta, status: 204 };
+      }
+}
   deleteUsuario() {
     return "usuario deletado";
   }
