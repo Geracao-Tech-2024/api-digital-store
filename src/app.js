@@ -19,6 +19,7 @@ app.use(express.json());
 
 // arquivos referente a rotas
 const routeUsuarios = require('./routes/routeUser');
+
 const routeCategorys = require('./routes/routeCategorys');
 app.use('/v1/user', routeUsuarios);
 app.use('/v1/category', routeCategorys);
