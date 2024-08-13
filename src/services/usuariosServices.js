@@ -69,16 +69,19 @@ class UsuarioServices {
     });
   }
 
+
   putUsuario() {
     return "usuario atualizado";
   }
   deleteUsuario() {
     return "usuario deletado";
   }
+  
   // let senha_criptografada = passwordEncoded();
   async passwordEncoded(password) {
     return await bcrypt.hash(password, 7);
   }
+  
   //                                        senha             hash
   // let compare_senha = passwordCompare( 1223123123 , jlkjlukhk123iojheskzça)
   async passwordCompare(password, hashPassword) {
