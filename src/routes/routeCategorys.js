@@ -5,5 +5,6 @@ const express = require('express');
 const category = express();
 
 category.get('/', Controller.getAllCategorys);
+category.get('/:id', Controller.deleteCategory);
 
 module.exports = category;
