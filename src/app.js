@@ -18,12 +18,12 @@ app.use(cors({ origin: "*" }));
 app.use(express.json());
 
 // arquivos referente a rotas
-const routeUsuarios = require('./routes/routeUser');
-
+const routeUsers = require('./routes/routeUser');
 const routeCategorys = require('./routes/routeCategorys');
-app.use('/v1/user', routeUsuarios);
+const routeProducts = require('./routes/routeProducts.js');
+app.use('/v1/user', routeUsers);
 app.use('/v1/category', routeCategorys);
-
+app.use('/v1/product/', routeProducts)
 
 app.use('/*', (_, resp)=> resp.send('Error404'))
 
