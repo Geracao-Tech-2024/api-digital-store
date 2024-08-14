@@ -4,6 +4,7 @@ const Controller = require('./../controller/categoryController');
 const express = require('express');
 const category = express();
 
+category.get('/:id', Controller.getCategoryById)
 category.get('/', Controller.getAllCategorys);
 category.get('/:id', Controller.deleteCategory);
 
