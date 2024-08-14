@@ -14,8 +14,8 @@ class JWToken {
         })
     }
     
-    async createTokenJWT(password) {
-        return await jwt.sign({ userId: password }, process.env.SECRET_JWT , { expiresIn: '1h' });
+    async createTokenJWT(id) {
+        return await jwt.sign({ userId: id }, process.env.SECRET_JWT , { expiresIn: '1h' });
     }
 }
 
