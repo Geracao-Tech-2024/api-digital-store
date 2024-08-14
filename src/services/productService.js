@@ -1,9 +1,13 @@
-const Product = require('../models/Product')
+const Product = require("../models/Product");
 
-class ProductServices{
-    async getProducts(){
-        return 'todos os usuarios';
-    }
+class ProductServices {
+  async getProducts() {
+    return "todos os usuarios";
+  }
+
+  async postProducts() {
+    return "todos os usuarios";
+  }
 }
 
-module.exports =  new ProductServices();
+module.exports = new ProductServices();
