@@ -1,12 +1,13 @@
 const productService = require("../services/productService.js");
 
 class productController {
-  async getProduct(requisicao, resposta) {
+  async getProductById(req, res) {
     try {
-      let resp = await productService.getProduct(requisicao);
-      resposta.status(resp.status).send(resp.message);
+      const { id } = req.params;
+      const resp = await productService.getProductById(id);
+      res.status(resp.status).send(resp.message);
     } catch (erro) {
-      resposta.status(500).send(erro.message);
+      res.status(500).send(erro.message);
     }
   }
 
