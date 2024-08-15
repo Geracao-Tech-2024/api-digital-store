@@ -1,68 +1,67 @@
 const Category = require("../models/Category");
 
 class CategoriesServices {
-  async getAllCategorys(req) {
-    const {
-      limit = 12,
-      page = 1,
-      fields = "name,slug",
-      use_in_menu,
-    } = req.query;
-
-    const filter = use_in_menu === "true" ? { use_in_menu: true } : {};
-
-    const projection = fields.split(",").join(" ");
-    let categories;
-
-    if (limit === "-1") {
-      categories = await Category.findAll({
-        where: filter,
-        attributes: projection,
-      });
-    } else {
-      categories = await Category.findAll({
-        where: filter,
-        attributes: projection,
-        limit: parseInt(limit, 10),
-        offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
-      });
+  async getCategorys(req) {
+    const categorias = await Category.findAll();
+  
+    if (!categorias || categorias.length === 0) {
+      return { status: 404, message: "Not found" };
     }
-
-    const dadosCategory = categories.map((cats) => ({
-      id: cats.id,
-      name: cats.name,
-      slug: cats.slug,
-    }));
-
-    return {
-      message: dadosCategory,
-    };
-    // const categorias = await Category.findAll();
-    // let {limit} = req.body
-
-    // if( limit == '-1'){
-    //     let dadosCategory = categorias.map(cats =>({
-    //         id: cats.id,
-    //         name: cats.name,
-    //         slug: cats.slug
-    //     }
-    // ));
-    // return{message : dadosCategory}
-
-    // }else if(limit >= 1){
-    //     let count = 0
-    //     let dadosCategory = categorias.forEach(element =>{
-    //         if(count < limit){
-    //             return element
-    //         }
-    //         count += 1
-    //     })
-    // }
-    // else{
-    //     limit = 12
-    // };
+  
+    let { limit, fields, page, use_in_menu } = req.body;
+  
+    // Valores padrão
+    page = page || 1;
+    limit = parseInt(limit, 10);
+  
+    if (use_in_menu === undefined || use_in_menu === null) {
+      use_in_menu = true;
+    }
+  
+    // Filtragem por use_in_menu
+    let dadosCategory = categorias.filter(cats => cats.use_in_menu === use_in_menu);
+  
+    // Filtro de campos
+    dadosCategory = dadosCategory.map(cats => {
+      const baseData = { id: cats.id, use_in_menu: cats.use_in_menu };
+      if (fields === 'name') {
+        return { ...baseData, name: cats.name };
+      } else if (fields === 'slug') {
+        return { ...baseData, slug: cats.slug };
+      } else {
+        return { ...baseData, name: cats.name, slug: cats.slug };
+      }
+    });
+  
+    // Ignora a paginação se limit for -1
+    if (limit === -1) {
+      // Retorna todas as categorias
+      return { status: 200, message: dadosCategory };
+    } else {
+      // Define limit padrão como 12, caso limit seja inválido
+      if (isNaN(limit) || limit < 1) {
+        limit = 12;
+      }
+  
+      // Calcula os índices de fatiamento
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+  
+      // Garante que o índice final não ultrapasse o tamanho do array
+      if (startIndex >= dadosCategory.length) {
+        return { status: 200, message: [] }; // Página solicitada não existe
+      }
+  
+      // Aplica paginação
+      dadosCategory = dadosCategory.slice(startIndex, endIndex);
+  
+      return { status: 200, message: dadosCategory };
+    }
   }
-
+ 
+  
+  
+  
   async getCategoryById(id) {
     const categoria = await Category.findByPk(id);
     if (!categoria) {
