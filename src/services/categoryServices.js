@@ -87,13 +87,13 @@ class CategoriesServices {
     }
 
     const newCategory = { name, slug, use_in_menu };
-    await category.create(newCategory);
+    await Category.create(newCategory);
 
     return { message: "categoria criada", status: 201 };
   }
 
   async deleteCategory() {
-    return { messege: "usuario deletado", status: 200 };
+    return { message: "usuario deletado", status: 200 };
   }
 }
 

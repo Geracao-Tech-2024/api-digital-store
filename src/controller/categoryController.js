@@ -23,7 +23,7 @@ class categoriesController {
 
   async postCategory(requisicao, resposta) {
     try {
-      let retorno = await categoryServices.createCategory(requisicao);
+      let retorno = await categoryServices.postCategory(requisicao);
       resposta.status(retorno.status).send(retorno.message);
     } catch (erro) {
       resposta.status(500).send(erro.message);
