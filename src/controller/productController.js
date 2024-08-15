@@ -6,14 +6,14 @@ class productController {
       const { id } = req.params;
       const resp = await productService.getProductById(id);
       res.status(resp.status).send(resp.message);
-    } catch (erro) {
-      res.status(500).send(erro.message);
+    } catch (error) {
+      res.status(500).send(error.message);
     }
   }
 
-  async postProduct(requisicao, resposta) {
+  async postProducts(requisicao, resposta) {
     try {
-      let retorno = await productServices.postProduct(requisicao);
+      let retorno = await productService.postProducts(requisicao);
       resposta.status(retorno.status).send(retorno.message);
     } catch (erro) {
       resposta.status(500).send(erro.message);

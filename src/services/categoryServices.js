@@ -1,35 +1,67 @@
 const Category = require("../models/Category");
 
 class CategoriesServices {
-  async getAllCategorys(req){
+  async getCategorys(req) {
     const categorias = await Category.findAll();
-    let {limit} = req.body
-
-    if( limit == '-1'){
-        let dadosCategory = categorias.map(cats =>({
-            id: cats.id,
-            name: cats.name,
-            slug: cats.slug
-        }
-    ));
-    return{message : dadosCategory}
-
-
-    }else if(limit >= 1){
-        let count = 0
-        let dadosCategory = categorias.forEach(element =>{
-            if(count < limit){
-                return element
-            }
-            count += 1
-        })
+  
+    if (!categorias || categorias.length === 0) {
+      return { status: 404, message: "Not found" };
     }
-    else{
-        limit = 12
-    };
-    
+  
+    let { limit, fields, page, use_in_menu } = req.body;
+  
+    // Valores padrão
+    page = page || 1;
+    limit = parseInt(limit, 10);
+  
+    if (use_in_menu === undefined || use_in_menu === null) {
+      use_in_menu = true;
+    }
+  
+    // Filtragem por use_in_menu
+    let dadosCategory = categorias.filter(cats => cats.use_in_menu === use_in_menu);
+  
+    // Filtro de campos
+    dadosCategory = dadosCategory.map(cats => {
+      const baseData = { id: cats.id, use_in_menu: cats.use_in_menu };
+      if (fields === 'name') {
+        return { ...baseData, name: cats.name };
+      } else if (fields === 'slug') {
+        return { ...baseData, slug: cats.slug };
+      } else {
+        return { ...baseData, name: cats.name, slug: cats.slug };
+      }
+    });
+  
+    // Ignora a paginação se limit for -1
+    if (limit === -1) {
+      // Retorna todas as categorias
+      return { status: 200, message: dadosCategory };
+    } else {
+      // Define limit padrão como 12, caso limit seja inválido
+      if (isNaN(limit) || limit < 1) {
+        limit = 12;
+      }
+  
+      // Calcula os índices de fatiamento
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+  
+      // Garante que o índice final não ultrapasse o tamanho do array
+      if (startIndex >= dadosCategory.length) {
+        return { status: 200, message: [] }; // Página solicitada não existe
+      }
+  
+      // Aplica paginação
+      dadosCategory = dadosCategory.slice(startIndex, endIndex);
+  
+      return { status: 200, message: dadosCategory };
+    }
   }
-
+ 
+  
+  
+  
   async getCategoryById(id) {
     const categoria = await Category.findByPk(id);
     if (!categoria) {
@@ -46,9 +78,42 @@ class CategoriesServices {
     };
   }
 
-  async deleteCategory() {
-    return { messege: "usuario deletado", status: 200 };
+  async updateCategory(req){
+    const {id} = req.params;
+    try {
+      let category = await Category.findByPk(id);
+
+
+      if(!req.body || !req.body.name || !req.body.slug || req.body.use_in_menu != undefined || req.body.use_in_menu != null){
+        return {status:400, message:"Dados invalidos."}
+      }
+
+      if (!category){
+      return {status: 404, message:"Categoria não encontrada."}
+    }
+
+    await category.update(req.body)
+      return {status: 204, message:""}
+    } 
+    
+    catch (error) {
+      return {status:500, message:"Erro do servidor"}
+    }
+  } 
+
+  async postCategory(req) {
+    const { name, slug, use_in_menu } = req.body;
+
+    if (!name || !slug || !use_in_menu) {
+      return { message: "Todos os campos são obrigatórios", status: 400 };
+    }
+
+    const newCategory = { name, slug, use_in_menu };
+    await Category.create(newCategory);
+
+    return { message: "categoria criada", status: 201 };
   }
+
 }
 
 module.exports = new CategoriesServices();
