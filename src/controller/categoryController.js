@@ -33,7 +33,7 @@ class categoriesController {
 
     async deleteCategory(requisicao, resposta) {
         try {
-            let resp = await categoriesController.deleteCategory();
+            let resp = await categoryServices.deleteCategory(requisicao);
             resposta.status(resp.status).send(resp.message);
         } catch (error) {
             resposta.status(500).send(erro.message);

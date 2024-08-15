@@ -91,8 +91,14 @@ class CategoriesServices {
     return { message: "categoria criada", status: 201 };
   }
 
-  async deleteCategory() {
-    return { message: "usuario deletado", status: 200 };
+  async deleteCategory(req) {
+    const { id } = req.params;
+    const categoria = await Category.findByPk(id);
+    if (!categoria || categoria == {} || categoria == null) {
+      return { message: "categoria não encontrada", status: 404 };
+    }
+    await Category.destroy({ where: { id } });  
+    return { message: "", status: 204 };
   }
 }
 
