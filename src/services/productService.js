@@ -3,7 +3,7 @@ const Product = require("../models/Product");
 class ProductServices {
   async getProductById(id) {
     try {
-      const product = await Product.findByPk(id); 
+      const product = await Product.findByPk(id);
       if (product) {
         return {
           status: 200,
@@ -66,6 +66,23 @@ class ProductServices {
     await Product.create(newProduct);
     return { status: "201", message: "Created" };
   }
+  async deleteProduct(req) {
+    const { id } = req.params
+    const product = await Product.findByPk(id);
+
+    if (!product) {
+      return { message: 'Produto não encontrado', status: 404 };
+    }
+
+    await Product.destroy({
+      where: { id: `${id}` }
+    });
+
+    return { message: 'Produto deletado com sucesso', status: 204 };
+  }
 }
+
+
+
 
 module.exports = new ProductServices();
