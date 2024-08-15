@@ -3,8 +3,9 @@ const categoryServices =  require('./../services/categoryServices');
 class categoriesController {
     async getAllCategorys(requisicao, resposta) {
         try {
-            let retorno = await categoryServices.getAllCategorys(requisicao);
-            resposta.status(retorno.status).send(retorno.message)
+            let resp = await categoryServices.getCategorys(requisicao);
+            console.log(resp)
+            resposta.status(resp.status).send(resp.message)
         } catch (erro) {
             resposta.status(500).send(erro.message)
         }
