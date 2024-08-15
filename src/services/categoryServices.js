@@ -1,33 +1,41 @@
 const Category = require("../models/Category");
 
 class CategoriesServices {
-  async getAllCategorys(req){
-    const { limit = 12, page = 1, fields = 'name,slug', use_in_menu } = req.query;
+  async getAllCategorys(req) {
+    const {
+      limit = 12,
+      page = 1,
+      fields = "name,slug",
+      use_in_menu,
+    } = req.query;
 
-    const filter = use_in_menu === 'true' ? { use_in_menu: true } : {};
+    const filter = use_in_menu === "true" ? { use_in_menu: true } : {};
 
-    const projection = fields.split(',').join(' ');
+    const projection = fields.split(",").join(" ");
     let categories;
 
-    if (limit === '-1') {
-        categories = await Category.findAll({ where: filter, attributes: projection });
+    if (limit === "-1") {
+      categories = await Category.findAll({
+        where: filter,
+        attributes: projection,
+      });
     } else {
-        categories = await Category.findAll({
-            where: filter,
-            attributes: projection,
-            limit: parseInt(limit, 10),
-            offset: (parseInt(page, 10) - 1) * parseInt(limit, 10)
-        });
+      categories = await Category.findAll({
+        where: filter,
+        attributes: projection,
+        limit: parseInt(limit, 10),
+        offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
+      });
     }
 
-    const dadosCategory = categories.map(cats => ({
-        id: cats.id,
-        name: cats.name,
-        slug: cats.slug
+    const dadosCategory = categories.map((cats) => ({
+      id: cats.id,
+      name: cats.name,
+      slug: cats.slug,
     }));
 
     return {
-        message: dadosCategory
+      message: dadosCategory,
     };
     // const categorias = await Category.findAll();
     // let {limit} = req.body
@@ -40,7 +48,6 @@ class CategoriesServices {
     //     }
     // ));
     // return{message : dadosCategory}
-
 
     // }else if(limit >= 1){
     //     let count = 0
@@ -70,6 +77,19 @@ class CategoriesServices {
         use_in_menu: categoria.use_in_menu,
       },
     };
+  }
+
+  async postCategory(req) {
+    const { name, slug, use_in_menu } = req.body;
+
+    if (!name || !slug || !use_in_menu) {
+      return { message: "Todos os campos são obrigatórios", status: 400 };
+    }
+
+    const newCategory = { name, slug, use_in_menu };
+    await category.create(newCategory);
+
+    return { message: "categoria criada", status: 201 };
   }
 
   async deleteCategory() {
