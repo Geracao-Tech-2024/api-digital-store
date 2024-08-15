@@ -2,32 +2,58 @@ const Category = require("../models/Category");
 
 class CategoriesServices {
   async getAllCategorys(req){
-    const categorias = await Category.findAll();
-    let {limit} = req.body
+    const { limit = 12, page = 1, fields = 'name,slug', use_in_menu } = req.query;
 
-    if( limit == '-1'){
-        let dadosCategory = categorias.map(cats =>({
-            id: cats.id,
-            name: cats.name,
-            slug: cats.slug
-        }
-    ));
-    return{message : dadosCategory}
+    const filter = use_in_menu === 'true' ? { use_in_menu: true } : {};
 
+    const projection = fields.split(',').join(' ');
+    let categories;
 
-    }else if(limit >= 1){
-        let count = 0
-        let dadosCategory = categorias.forEach(element =>{
-            if(count < limit){
-                return element
-            }
-            count += 1
-        })
+    if (limit === '-1') {
+        categories = await Category.findAll({ where: filter, attributes: projection });
+    } else {
+        categories = await Category.findAll({
+            where: filter,
+            attributes: projection,
+            limit: parseInt(limit, 10),
+            offset: (parseInt(page, 10) - 1) * parseInt(limit, 10)
+        });
     }
-    else{
-        limit = 12
+
+    const dadosCategory = categories.map(cats => ({
+        id: cats.id,
+        name: cats.name,
+        slug: cats.slug
+    }));
+
+    return {
+        message: dadosCategory
     };
-    
+    // const categorias = await Category.findAll();
+    // let {limit} = req.body
+
+    // if( limit == '-1'){
+    //     let dadosCategory = categorias.map(cats =>({
+    //         id: cats.id,
+    //         name: cats.name,
+    //         slug: cats.slug
+    //     }
+    // ));
+    // return{message : dadosCategory}
+
+
+    // }else if(limit >= 1){
+    //     let count = 0
+    //     let dadosCategory = categorias.forEach(element =>{
+    //         if(count < limit){
+    //             return element
+    //         }
+    //         count += 1
+    //     })
+    // }
+    // else{
+    //     limit = 12
+    // };
   }
 
   async getCategoryById(id) {
