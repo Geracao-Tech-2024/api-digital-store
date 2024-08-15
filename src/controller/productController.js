@@ -6,8 +6,8 @@ class productController {
       const { id } = req.params;
       const resp = await productService.getProductById(id);
       res.status(resp.status).send(resp.message);
-    } catch (erro) {
-      res.status(500).send(erro.message);
+    } catch (error) {
+      res.status(500).send(error.message);
     }
   }
 
