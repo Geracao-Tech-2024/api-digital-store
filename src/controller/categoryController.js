@@ -21,6 +21,15 @@ class categoriesController {
             res.status(500).send('Erro interno do servidor');
         }
     }
+
+    async updateCategory(requisicao, resposta) {
+        try {
+            const result = await categoryServices.updateCategory(requisicao);
+            resposta.status(result.status).send(result.message);
+        } catch (error) {
+            resposta.status(500).send("Erro interno do servidor")
+        }
+    }
     
     
     async deleteCategory(requisicao, resposta){

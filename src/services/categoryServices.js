@@ -46,8 +46,31 @@ class CategoriesServices {
     };
   }
 
+  async updateCategory(req){
+    const {id} = req.params;
+    try {
+      let category = await Category.findByPk(id);
+
+
+      if(!req.body || !req.body.name || !req.body.slug || req.body.use_in_menu != undefined || req.body.use_in_menu != null){
+        return {status:400, message:"Dados invalidos."}
+      }
+
+      if (!category){
+      return {status: 404, message:"Categoria não encontrada."}
+    }
+
+    await category.update(req.body)
+      return {status: 204, message:""}
+    } 
+    
+    catch (error) {
+      return {status:500, message:"Erro do servidor"}
+    }
+  } 
+
   async deleteCategory() {
-    return { messege: "usuario deletado", status: 200 };
+    return { messege: "usuario deletado", status: 203 };
   }
 }
 
