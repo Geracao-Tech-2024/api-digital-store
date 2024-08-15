@@ -3,13 +3,12 @@ const Controller = require('./../controller/usuariosController');
 
 const express = require('express');
 const usuarios = express();
+const jwt_alth = require('../middleware/jwt_alth');
 
-usuarios.get('/', Controller.getAllUsuarios);
 usuarios.get('/:id', Controller.getUsuario);
 usuarios.post('/', Controller.setUsuario);
-usuarios.put('/:id', Controller.updateUsuario);
-usuarios.patch('/:id', Controller.updateUsuario);
-usuarios.delete('/:id', Controller.deleteUsuario);
+usuarios.put('/:id', jwt_alth.verifyJWT, Controller.updateUsuario);
+usuarios.delete('/:id', jwt_alth.verifyJWT, Controller.deleteUsuario);
 usuarios.post('/token', Controller.gerarToken)
 
 module.exports = usuarios;
