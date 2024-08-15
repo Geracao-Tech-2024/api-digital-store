@@ -18,9 +18,12 @@ app.use(cors({ origin: "*" }));
 app.use(express.json());
 
 // arquivos referente a rotas
-const routeUsuarios = require('./routes/routeUser');
-app.use('/v1/user', jwt_alth.verifyJWT , routeUsuarios);
-
+const routeUsers = require('./routes/routeUser');
+const routeCategorys = require('./routes/routeCategorys');
+const routeProducts = require('./routes/routeProducts.js');
+app.use('/v1/user', routeUsers);
+app.use('/v1/category', routeCategorys);
+app.use('/v1/product/', routeProducts)
 
 app.use('/*', (_, resp)=> resp.send('Error404'))
 
