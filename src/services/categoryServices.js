@@ -58,6 +58,7 @@ class CategoriesServices {
       return { status: 200, message: dadosCategory };
     }
   }
+ 
   
   
   
@@ -77,8 +78,21 @@ class CategoriesServices {
     };
   }
 
+  async postCategory(req) {
+    const { name, slug, use_in_menu } = req.body;
+
+    if (!name || !slug || !use_in_menu) {
+      return { message: "Todos os campos são obrigatórios", status: 400 };
+    }
+
+    const newCategory = { name, slug, use_in_menu };
+    await Category.create(newCategory);
+
+    return { message: "categoria criada", status: 201 };
+  }
+
   async deleteCategory() {
-    return { messege: "usuario deletado", status: 200 };
+    return { message: "usuario deletado", status: 200 };
   }
 }
 
