@@ -6,5 +6,5 @@ const product = express();
 
 product.get("/:id", Controller.getProductById);
 product.post("/", Controller.postProducts);
-
+product.delete("/:id", Controller.deleteProduct);
 module.exports = product;
