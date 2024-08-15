@@ -11,9 +11,9 @@ class productController {
     }
   }
 
-  async postProduct(requisicao, resposta) {
+  async postProducts(requisicao, resposta) {
     try {
-      let retorno = await productServices.postProduct(requisicao);
+      let retorno = await productService.postProducts(requisicao);
       resposta.status(retorno.status).send(retorno.message);
     } catch (erro) {
       resposta.status(500).send(erro.message);
