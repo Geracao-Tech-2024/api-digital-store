@@ -22,7 +22,17 @@ class categoriesController {
         }
     }
 
+    async updateCategory(requisicao, resposta) {
+        try {
+            const result = await categoryServices.updateCategory(requisicao);
+            resposta.status(result.status).send(result.message);
+        } catch (error) {
+            resposta.status(500).send("Erro interno do servidor")
+        }
+    }
+    
     async postCategory(requisicao, resposta) {
+
         try {
             let retorno = await categoryServices.postCategory(requisicao);
             resposta.status(retorno.status).send(retorno.message);

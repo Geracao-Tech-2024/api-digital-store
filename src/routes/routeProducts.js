@@ -4,7 +4,7 @@ const Controller = require("../controller/productController.js");
 const express = require("express");
 const product = express();
 
-product.get("/", Controller.getProductById);
-product.post("/", Controller.postProduct);
+product.get("/:id", Controller.getProductById);
+product.post("/", Controller.postProducts);
 
 module.exports = product;
