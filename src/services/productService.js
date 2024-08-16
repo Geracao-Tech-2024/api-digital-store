@@ -2,49 +2,57 @@ const Product = require("../models/Product");
 
 class ProductServices {
   async getAllProducts(req) {
-    
     const produtos = await Product.findAll();
 
     if (!produtos || produtos.length === 0) {
-        return { status: 404, message: "Produto Não Encontrado" };
+        return { status: 404, message: "Not found" };
     }
 
-    let { limit, fields, page, match } = req.body;
+    let { limit, fields, page } = req.body;
 
-    page = parseInt(page) || 1;
-    limit = parseInt(limit) || 12;
+    // Valores padrão
+    page = parseInt(page, 10) || 1;
+    limit = parseInt(limit, 10);
 
-    return{status : 200, message: produtos}
 
-    // const campos = fields ? fields.split(',') : ['name', 'images', 'price'];
+    // Filtro de campos
+    let dadosProducts = produtos.map(prod => {
+        const baseData = { id: prod.id, name: prod.name, price: prod.price, image: prod.image };
+        if (fields === 'name') {
+            return { ...baseData, name: prod.name };
+        } else if (fields === 'price') {
+            return { ...baseData, price: prod.price };
+        } else if (fields === 'image') {
+            return { ...baseData, image: prod.image };
+        } else {
+            return { ...baseData, name: prod.name, price: prod.price, image: prod.image };
+        }
+    });
 
-    // let produtosFiltrados = produtos;
-    // if (match) {
-    //     const termoBusca = match.toLowerCase();
-    //     produtosFiltrados = produtos.filter(produto => 
-    //         produto.name.toLowerCase().includes(termoBusca) ||
-    //         produto.description.toLowerCase().includes(termoBusca)
-    //     );
-    // }
+    // Ignora a paginação se limit for -1
+    if (limit === -1) {
+        // Retorna todos os produtos
+        return { status: 200, message: dadosProducts };
+    } else {
+        // Define limit padrão como 12, caso limit seja inválido
+        if (isNaN(limit) || limit < 1) {
+            limit = 12;
+        }
 
-    // produtosFiltrados = produtosFiltrados.map(produto => {
-    //     const produtoFiltrado = {};
-    //     campos.forEach(campo => {
-    //         if (produto.hasOwnProperty(campo)) {
-    //             produtoFiltrado[campo] = produto[campo];
-    //         }
-    //     });
-    //     return produtoFiltrado;
-    // });
+        // Calcula os índices de fatiamento
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
 
-    // const inicio = (page - 1) * limit;
-    // const fim = inicio + limit;
-    // const produtosPag = produtosFiltrados.slice(inicio, fim);
+        // Garante que o índice final não ultrapasse o tamanho do array
+        if (startIndex >= dadosProducts.length) {
+            return { status: 200, message: [] }; // Página solicitada não existe
+        }
 
-    // return {
-    //     status: 200,
-    //     data: produtosPag
-    // };
+        // Aplica paginação
+        dadosProducts = dadosProducts.slice(startIndex, endIndex);
+
+        return { status: 200, message: dadosProducts };
+    }
 }
 
 
@@ -74,7 +82,7 @@ class ProductServices {
     const {
       enabled,
       name,
-      slug,
+      image,
       stock,
       description,
       price,
@@ -114,22 +122,19 @@ class ProductServices {
     return { status: "201", message: "Created" };
   }
   async deleteProduct(req) {
-    const { id } = req.params
+    const { id } = req.params;
     const product = await Product.findByPk(id);
 
     if (!product) {
-      return { message: 'Produto não encontrado', status: 404 };
+      return { message: "Produto não encontrado", status: 404 };
     }
 
     await Product.destroy({
-      where: { id: `${id}` }
+      where: { id: `${id}` },
     });
 
-    return { message: 'Produto deletado com sucesso', status: 204 };
+    return { message: "Produto deletado com sucesso", status: 204 };
   }
 }
-
-
-
 
 module.exports = new ProductServices();
