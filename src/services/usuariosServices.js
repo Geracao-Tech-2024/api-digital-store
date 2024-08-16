@@ -15,7 +15,7 @@ class UsuarioServices {
     if (!user) {
       return { status: 404, message: "Usuário não encontrado" };
     }else{
-      return {status:'200',message: 'Usuario Encontrado Com Sucesso'}
+      return {status:'200',message: user}
     }
   }
 
