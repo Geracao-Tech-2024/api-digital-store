@@ -78,28 +78,39 @@ class CategoriesServices {
     };
   }
 
-  async updateCategory(req){
-    const {id} = req.params;
+  async updateCategory(req) {
+    const { id } = req.params;
+    console.log('Requisição ID:', id);
+    console.log('Corpo da requisição:', req.body);
+  
     try {
+      // Encontra categoria pelo ID :)
       let category = await Category.findByPk(id);
-
-
-      if(!req.body || !req.body.name || !req.body.slug || req.body.use_in_menu != undefined || req.body.use_in_menu != null){
-        return {status:400, message:"Dados invalidos."}
+  
+      // Verifica se a categoria existe :)
+      if (!category) {
+        console.log('Categoria não encontrada');
+        return { status: 404, message: "Categoria não encontrada." };
       }
-
-      if (!category){
-      return {status: 404, message:"Categoria não encontrada."}
+  
+      // Verifica se o corpo da requisição está presente e se os campos são válidos :)
+      const { name, slug, use_in_menu } = req.body;
+      if (!name || !slug || use_in_menu === undefined || use_in_menu === null) {
+        console.log('Dados inválidos:', { name, slug, use_in_menu });
+        return { status: 400, message: "Dados inválidos." };
+      }
+  
+      // Atualiza a categoria com os novos dados :)
+      await category.update(req.body);
+  
+      return { status: 204, message: "" };
+    } catch (error) {
+      // Retorna erro do servidor :)
+      console.error('Erro do servidor:', error); 
+      return { status: 500, message: "Erro do servidor." };
     }
-
-    await category.update(req.body)
-      return {status: 204, message:""}
-    } 
-    
-    catch (error) {
-      return {status:500, message:"Erro do servidor"}
-    }
-  } 
+  }
+  
 
   async postCategory(req) {
     const { name, slug, use_in_menu } = req.body;
