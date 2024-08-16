@@ -10,51 +10,41 @@ class ProductServices {
 
     let { limit, fields, page } = req.body;
 
-    // Valores padrão
     page = parseInt(page, 10) || 1;
     limit = parseInt(limit, 10);
 
-
-    // Filtro de campos
     let dadosProducts = produtos.map(prod => {
-        const baseData = { id: prod.id, name: prod.name, price: prod.price, image: prod.image };
-        if (fields === 'name') {
-            return { ...baseData, name: prod.name };
-        } else if (fields === 'price') {
-            return { ...baseData, price: prod.price };
-        } else if (fields === 'image') {
-            return { ...baseData, image: prod.image };
-        } else {
-            return { ...baseData, name: prod.name, price: prod.price, image: prod.image };
-        }
-    });
-
-    // Ignora a paginação se limit for -1
-    if (limit === -1) {
-        // Retorna todos os produtos
+      const baseData = {};
+      if (fields.includes('name')) {
+          baseData.name = prod.name;
+      }
+      if (fields.includes('image')) {
+          baseData.image = prod.image;
+      }
+      if (fields.includes('price')) {
+          baseData.price = prod.price;
+      }
+      
+      baseData.id = prod.id;
+      return baseData;
+  });
+  
+    if (limit === -1){
         return { status: 200, message: dadosProducts };
-    } else {
-        // Define limit padrão como 12, caso limit seja inválido
+      }else{
         if (isNaN(limit) || limit < 1) {
             limit = 12;
         }
-
-        // Calcula os índices de fatiamento
         const startIndex = (page - 1) * limit;
         const endIndex = startIndex + limit;
-
-        // Garante que o índice final não ultrapasse o tamanho do array
         if (startIndex >= dadosProducts.length) {
-            return { status: 200, message: [] }; // Página solicitada não existe
+            return { status: 200, message: [] };
         }
-
-        // Aplica paginação
         dadosProducts = dadosProducts.slice(startIndex, endIndex);
 
         return { status: 200, message: dadosProducts };
     }
 }
-
 
   async getProductById(id) {
     try {
