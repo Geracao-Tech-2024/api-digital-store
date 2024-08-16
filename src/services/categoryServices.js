@@ -84,28 +84,32 @@ class CategoriesServices {
     console.log('Corpo da requisição:', req.body);
   
     try {
-      // Encontrar a categoria pelo ID
+      // Encontra categoria pelo ID :)
       let category = await Category.findByPk(id);
   
-      // Verificar se a categoria existe
+      // Verifica se a categoria existe :)
       if (!category) {
         console.log('Categoria não encontrada');
         return { status: 404, message: "Categoria não encontrada." };
       }
   
-      // Verificar se o corpo da requisição está presente e se os campos são válidos
+
+
+      // Verifica se o corpo da requisição está presente e se os campos são válidos :)
       const { name, slug, use_in_menu } = req.body;
       if (!name || !slug || use_in_menu === undefined || use_in_menu === null) {
         console.log('Dados inválidos:', { name, slug, use_in_menu });
         return { status: 400, message: "Dados inválidos." };
       }
   
-      // Atualizar a categoria com os novos dados
+
+
+      // Atualiza a categoria com os novos dados :)
       await category.update(req.body);
   
       return { status: 204, message: "" };
     } catch (error) {
-      // Retornar erro do servidor
+      // Retorna erro do servidor :)
       console.error('Erro do servidor:', error); 
       return { status: 500, message: "Erro do servidor." };
     }

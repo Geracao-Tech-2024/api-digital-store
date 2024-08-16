@@ -2,9 +2,6 @@
 const express = require('express');
 const app = express();
 
-// classe de middleware do JWT
-const jwt_alth = require('./middleware/jwt_alth');
-
 const Database = require('./config/database');
 const cors = require("cors");
 
