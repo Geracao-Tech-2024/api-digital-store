@@ -1,6 +1,53 @@
 const Product = require("../models/Product");
 
 class ProductServices {
+  async getAllProducts(req) {
+    
+    const produtos = await Product.findAll();
+
+    if (!produtos || produtos.length === 0) {
+        return { status: 404, message: "Produto Não Encontrado" };
+    }
+
+    let { limit, fields, page, match } = req.body;
+
+    page = parseInt(page) || 1;
+    limit = parseInt(limit) || 12;
+
+    return{status : 200, message: produtos}
+
+    // const campos = fields ? fields.split(',') : ['name', 'images', 'price'];
+
+    // let produtosFiltrados = produtos;
+    // if (match) {
+    //     const termoBusca = match.toLowerCase();
+    //     produtosFiltrados = produtos.filter(produto => 
+    //         produto.name.toLowerCase().includes(termoBusca) ||
+    //         produto.description.toLowerCase().includes(termoBusca)
+    //     );
+    // }
+
+    // produtosFiltrados = produtosFiltrados.map(produto => {
+    //     const produtoFiltrado = {};
+    //     campos.forEach(campo => {
+    //         if (produto.hasOwnProperty(campo)) {
+    //             produtoFiltrado[campo] = produto[campo];
+    //         }
+    //     });
+    //     return produtoFiltrado;
+    // });
+
+    // const inicio = (page - 1) * limit;
+    // const fim = inicio + limit;
+    // const produtosPag = produtosFiltrados.slice(inicio, fim);
+
+    // return {
+    //     status: 200,
+    //     data: produtosPag
+    // };
+}
+
+
   async getProductById(id) {
     try {
       const product = await Product.findByPk(id);
