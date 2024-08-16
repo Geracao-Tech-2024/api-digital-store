@@ -93,16 +93,12 @@ class CategoriesServices {
         return { status: 404, message: "Categoria não encontrada." };
       }
   
-
-
       // Verifica se o corpo da requisição está presente e se os campos são válidos :)
       const { name, slug, use_in_menu } = req.body;
       if (!name || !slug || use_in_menu === undefined || use_in_menu === null) {
         console.log('Dados inválidos:', { name, slug, use_in_menu });
         return { status: 400, message: "Dados inválidos." };
       }
-  
-
 
       // Atualiza a categoria com os novos dados :)
       await category.update(req.body);
