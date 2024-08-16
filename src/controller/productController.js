@@ -1,6 +1,15 @@
 const productService = require("../services/productService.js");
 
 class productController {
+  async getAllProducts(req,res){
+    try{
+      let resp = await productService.getAllProducts(req);
+      res.status(resp.status).send(resp.message);
+    } catch (erro) {
+      res.status(500).send(erro.message);
+    }
+  }
+  
   async getProductById(req, res) {
     try {
       const { id } = req.params;

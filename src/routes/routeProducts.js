@@ -3,7 +3,7 @@ const Controller = require("../controller/productController.js");
 
 const express = require("express");
 const product = express();
-
+product.get('/', Controller.getAllProducts);
 product.get("/:id", Controller.getProductById);
 product.post("/", Controller.postProducts);
 product.delete("/:id", Controller.deleteProduct);

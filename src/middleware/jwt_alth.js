@@ -6,8 +6,12 @@ class JWToken {
 
     verifyJWT(req, resp, next) {
         let headers = req.headers.authorization;
+<<<<<<< HEAD
         if (headers == undefined) { return resp.status(401).end() }
         const token= headers.split(' ')[1];  
+=======
+        const token= headers.split(' ')[1]; 
+>>>>>>> dbac199d676a10b744cd2a9df27252efdd03e274
         jwt.verify(token, process.env.SECRET_JWT, (err, decoded) => {
             if (err) { return resp.status(401).end() };
     
