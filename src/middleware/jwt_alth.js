@@ -1,11 +1,13 @@
 require('dotenv').config();
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const { head } = require('../app');
 
 class JWToken {
 
     verifyJWT(req, resp, next) {
-        let headers = req.headers['Authorization'];
-        const token= headers.split(' ')[1]; 
+        let headers = req.headers.authorization;
+        if (headers == undefined) { return resp.status(401).end() }
+        const token= headers.split(' ')[1];  
         jwt.verify(token, process.env.SECRET_JWT, (err, decoded) => {
             if (err) { return resp.status(401).end() };
     

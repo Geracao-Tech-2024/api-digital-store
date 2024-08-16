@@ -11,7 +11,7 @@ class userController {
     async getUsuario(requisicao, resposta) {
         try {
             let busca = await usuarioServices.getUsuario(requisicao)
-            resposta.status(busca.status).send(busca.message)
+            resposta.status(busca.status).json(busca.message)
 
         } catch (erro) {
             resposta.status(500).send(erro)
@@ -32,7 +32,7 @@ class userController {
         try {
             let resp = await usuarioServices.deleteUsuario(req)
         
-            resposta.status(resp.status).send(resp.message)
+            resposta.status(resp.status).json(resp.message)
         } catch (erro) {
             resposta.status(500).send(erro.message)
         }

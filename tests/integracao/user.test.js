@@ -1,13 +1,11 @@
-const app = require('../../src/app');
-const request = require('supertest'); // para simular requisições HTTP
+const request = require('supertest');
+const app = require('./../../src/app');
 
 let server;
 
 beforeAll(async () => {
-    // Conecte ao banco de dados ou faça qualquer outra configuração necessária
-    // Aqui, você deve garantir que o banco de dados esteja conectado antes de iniciar o servidor.
 
-    // Simulação de conexão com o banco de dados (substitua por sua lógica real)
+    // Simulação de conexão com o banco de dados
     await new Promise((resolve, reject) => {
         app.on('db_ok', resolve);
     });
@@ -25,51 +23,162 @@ afterAll(async () => {
     }
 });
 
-describe('Testes para a rota /v1/user', () => {
-    test('GET: /v1/user/:id: Deve retornar um usuário específico', async () => {
-        let idUsuario = 20;
-        let status_esperado = 200;
-        
-        let resposta_esperada= {
-            id: 20,
-            firstname: "pablo",
-            surname: "vitar",
-            email: "auuuuug@mail.com"
-        }; 
-        const response = await request(app).get(`/v1/user/${idUsuario}`);
-    
-    
-        expect(response.status).toBe(status_esperado); // Verifica o status da resposta
-        expect(response.body).toEqual(resposta_esperada); // Verifica o corpo da resposta
-    });
-    test('GET: /v1/user/:id: Forçando erro 404', async () => {
-        let idUsuario = 4004;
-        let status_esperado = 404;
-        
-        let resposta_esperada= "Usuário não encontrado"; 
-        const response = await request(app).get(`/v1/user/${idUsuario}`);
-    
-    
-        expect(response.status).toBe(status_esperado); // Verifica o status da resposta
-        expect(response.body).toEqual(resposta_esperada); // Verifica o corpo da resposta
-    });
-    test('POST: /v1/user: Deve criar um novo usuario', async () => {
-        let status_esperado = 201;
-        let retorno_esperado= {"message": "Usuário criado com sucesso"};
-        
-        let body_enviado= {
-            "firstname": "user firstname",
-            "surname": "user surname",
-            "email": "user177@mail.com",
-            "password": "123@123",
-            "confirmPassword": "123@123"
-        }; 
+describe('User API Integration Tests', () => {
 
-        const response = await request(app)
-        .post(`/v1/user/`)
-        .send(body_enviado);
+    describe('POST /v1/user', () => {
+        it('Deve criar um novo usuário com sucesso', async () => {
+            const res = await request(app)
+                .post('/v1/user')
+                .send({
+                    firstname: 'John',
+                    surname: 'Doe',
+                    
+                    // tem que mudar para um email nao existente
+                    email: 'john.doe222@example.com', 
+
+                    password: 'password123',
+                    confirmPassword: 'password123',
+                });
     
-        expect(response.status).toBe(status_esperado); // Verifica o status da resposta
-        expect(response.body).toEqual(retorno_esperado); // Verifica o corpo da resposta
+            expect(res.statusCode).toEqual(201);
+            expect(res.body).toHaveProperty('message', 'Usuário criado com sucesso');
+        });
+    
+        it('Deve retornar erro se as senhas não coincidirem', async () => {
+            const res = await request(app)
+                .post('/v1/user')
+                .send({
+                    firstname: 'John',
+                    surname: 'Doe',
+                    email: 'john.doe12344@example.com',
+                    password: 'password123',
+                    confirmPassword: 'wrongpassword',
+                });
+    
+            expect(res.statusCode).toEqual(400);
+            expect(res.body).toHaveProperty('message', 'As senhas não coincidem');
+        });
+    
+        it('Deve retornar erro se o email já estiver em uso', async () => {
+    
+            const res = await request(app)
+                .post('/v1/user')
+                .send({
+                    firstname: 'John',
+                    surname: 'Doe',
+                    email: 'jane.doe111@example.com',
+                    password: 'password123',
+                    confirmPassword: 'password123',
+                });
+    
+            expect(res.statusCode).toEqual(400);
+            expect(res.body).toHaveProperty('message', 'Email já está em uso');
+        });
+    });
+    
+});
+describe('GET /v1/user/:id', () => {
+    it('Deve retornar um usuário específico', async () => {
+        
+        // Trocar o ID conforme necessário
+        // ID do usuário existente no banco de dados
+        const userId = 34;
+
+        const res = await request(app).get(`/v1/user/${userId}`);
+
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toHaveProperty('id', userId);
+        expect(res.body).toHaveProperty('firstname', 'Jane');
+        expect(res.body).toHaveProperty('surname', 'Doe');
+        expect(res.body).toHaveProperty('email', 'jane.doe@example.com');
+    });
+
+    it('Deve retornar erro se o usuário não for encontrado', async () => {
+        const res = await request(app).get('/v1/user/99999'); // ID que não existe
+
+        expect(res.statusCode).toEqual(404);
+        expect(res.body).toEqual('Usuário não encontrado');
+    });
+});
+
+// AINDA NAO TESTEI ESTE TESTE, EXEMPLO DE COMO DEVE SER
+describe('PUT /v1/user/:id', () => {
+    it('Deve atualizar um usuário existente', async () => {
+        // Trocar o ID conforme necessário
+        // ID do usuário existente no banco de dados
+        const userId = 20;
+
+        const tokenRes = await request(app)
+            .post('/v1/user/token')
+            .send({ email: 'john.doe@example.com', password: 'password123' });
+
+        const token = tokenRes.body.token;
+
+        const updateRes = await request(app)
+            .put(`/v1/user/${userId}`)
+            .set('Authorization', `Bearer ${token}`)
+            .send({
+                firstname: 'Johnny',
+                surname: 'Doe'
+            });
+
+        expect(updateRes.statusCode).toEqual(200);
+        expect(updateRes.body).toHaveProperty('message', 'Usuário atualizado com sucesso');
+    });
+
+    it('Deve retornar erro se o usuário não for encontrado', async () => {
+        const tokenRes = await request(app)
+            .post('/v1/user/token')
+            .send({ email: 'john.doe@example.com', password: 'password123' });
+
+        const token = tokenRes.body.token;
+
+        const res = await request(app)
+            .put('/v1/user/99999')
+            .set('Authorization', `Bearer ${token}`)
+            .send({
+                firstname: 'Johnny',
+                surname: 'Doe'
+            });
+
+        expect(res.statusCode).toEqual(404);
+        expect(res.body).toHaveProperty('message', 'Usuário não encontrado');
+    });
+});
+// FIM DO PUT QUE NAO FOI TESTADO
+
+describe('DELETE /v1/user/:id', () => {
+    it('Deve deletar um usuário existente', async () => {
+        
+        // Trocar o ID conforme necessário
+        // ID do usuário existente no banco de dados
+        const userId = 40;
+
+        const tokenRes = await request(app)
+            .post('/v1/user/token')
+            .send({ email: 'john.doe@example.com', password: 'password123' });
+
+        const token = tokenRes.body.token;
+
+        const deleteRes = await request(app)
+            .delete(`/v1/user/${userId}`)
+            .set('Authorization', `Bearer ${token}`);
+
+        expect(deleteRes.statusCode).toEqual(204); // 204 significa que foi deletado com sucesso e sem conteúdo na resposta
+    });
+
+    it('Deve retornar erro se o usuário não for encontrado', async () => {
+        const tokenRes = await request(app)
+            .post('/v1/user/token')
+            .send({ email: 'john.doe@example.com', password: 'password123' });
+
+        const token = tokenRes.body.token;
+
+        const res = await request(app)
+            .delete('/v1/user/99999')
+            .set('Authorization', `Bearer ${token}`);
+
+        expect(res.statusCode).toEqual(404);
+        expect(res.body).toEqual('Usuário não encontrado');
     });
 });
