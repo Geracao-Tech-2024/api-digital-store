@@ -8,27 +8,25 @@ class ProductServices {
         return { status: 404, message: "Not found" };
     }
 
-    let { limit, fields, page } = req.body;
+    let { limit, fields, page} = req.body;
 
     page = parseInt(page, 10) || 1;
     limit = parseInt(limit, 10);
 
     let dadosProducts = produtos.map(prod => {
       const baseData = {};
-      if (fields.includes('name')) {
-          baseData.name = prod.name;
+      if( fields == "name"){
+        baseData.name = prod.name
+      }if(fields == "image"){
+        baseData.image = prod.image
+      }if(fields == "price"){
+        baseData.price = prod.price
       }
-      if (fields.includes('image')) {
-          baseData.image = prod.image;
-      }
-      if (fields.includes('price')) {
-          baseData.price = prod.price;
-      }
-      
       baseData.id = prod.id;
       return baseData;
-  });
   
+    });
+
     if (limit === -1){
         return { status: 200, message: dadosProducts };
       }else{
