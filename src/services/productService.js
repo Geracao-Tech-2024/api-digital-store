@@ -1,48 +1,80 @@
 const Product = require("../models/Product");
 
 class ProductServices {
+  // produtos deve ter um campo com nome [category_id] que tem os ids correspodentes em product_category
+
   async getAllProducts(req) {
-    const produtos = await Product.findAll();
+    const { limit, page, fields, match, category_ids, price_range } = req.body;
+
+    // Defina valores padrão
+    const pageNumber = page || 1;
+    const pageSize = isNaN(parseInt(limit, 10)) ? 12 : parseInt(limit, 10);
+
+    // Construir o filtro de consulta
+    let query = {};
+
+    if (category_ids && category_ids.length > 0) {
+        query.category_id = { $in: category_ids };
+    }
+
+    if (price_range) {
+        const [min, max] = price_range.split('-').map(Number);
+        if (!isNaN(min) && !isNaN(max)) {
+            query.price = { $gte: min, $lte: max };
+        }
+    }
+
+    if (match) {
+        const matchLower = match.toLowerCase();
+        query.$or = [
+            { name: { $regex: matchLower, $options: 'i' } },
+            { description: { $regex: matchLower, $options: 'i' } }
+        ];
+    }
+
+    // Consultar produtos com os filtros
+    let produtos = await Product.findAll({ where: query });
 
     if (!produtos || produtos.length === 0) {
         return { status: 404, message: "Not found" };
     }
 
-    let { limit, fields, page} = req.body;
+    // Filtrar campos
+    if (fields) {
+        const fieldsArray = fields.split(',');
+        produtos = produtos.map(prod => {
+            let filteredProd = { id: prod.id };
+            fieldsArray.forEach(field => {
+                if (prod[field] !== undefined) {
+                    filteredProd[field] = prod[field];
+                }
+            });
+            return filteredProd;
+        });
+    }
 
-    page = parseInt(page, 10) || 1;
-    limit = parseInt(limit, 10);
+    // Ignorar paginação se limit for -1
+    if (pageSize === -1) {
+        return { status: 200, message: { data: produtos } };
+    } else {
+        const startIndex = (pageNumber - 1) * pageSize;
+        const endIndex = startIndex + pageSize;
 
-    let dadosProducts = produtos.map(prod => {
-      const baseData = {};
-      if( fields == "name"){
-        baseData.name = prod.name
-      }if(fields == "image"){
-        baseData.image = prod.image
-      }if(fields == "price"){
-        baseData.price = prod.price
-      }
-      baseData.id = prod.id;
-      return baseData;
-  
-    });
-
-    if (limit === -1){
-        return { status: 200, message: dadosProducts };
-      }else{
-        if (isNaN(limit) || limit < 1) {
-            limit = 12;
+        // Garantir que o índice final não ultrapasse o tamanho do array
+        if (startIndex >= produtos.length) {
+            return { status: 200, message: [] }; // Página solicitada não existe
         }
-        const startIndex = (page - 1) * limit;
-        const endIndex = startIndex + limit;
-        if (startIndex >= dadosProducts.length) {
-            return { status: 200, message: [] };
-        }
-        dadosProducts = dadosProducts.slice(startIndex, endIndex);
 
-        return { status: 200, message: dadosProducts };
+        // Aplicar paginação
+        produtos = produtos.slice(startIndex, endIndex);
+
+        return { status: 200, message: { data: produtos } };
     }
 }
+
+
+
+
 
   async getProductById(id) {
     try {
