@@ -27,7 +27,7 @@ const ProductCategory = sequelize.define('ProductCategory', {
     timestamps: true,
 });
 
-// Definindo os relacionamentos
+// Definindo associações
 ProductCategory.belongsTo(Product, {
     foreignKey: 'product_id',
     as: 'product'
@@ -36,16 +36,6 @@ ProductCategory.belongsTo(Product, {
 ProductCategory.belongsTo(Category, {
     foreignKey: 'category_id',
     as: 'category'
-});
-
-Product.hasMany(ProductCategory, {
-    foreignKey: 'product_id',
-    as: 'categories'
-});
-
-Category.hasMany(ProductCategory, {
-    foreignKey: 'category_id',
-    as: 'products'
 });
 
 module.exports = ProductCategory;

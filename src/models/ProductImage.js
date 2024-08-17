@@ -2,7 +2,7 @@
 
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/conect');
-const Product = require('./product'); // Importando o modelo Product para definir a associação
+const Product = require('./Product'); // Importando o modelo Product para definir a associação
 
 const ProductImage = sequelize.define('ProductImage', {
     id: {
@@ -32,15 +32,10 @@ const ProductImage = sequelize.define('ProductImage', {
     timestamps: true,
 });
 
-// Definindo o relacionamento
+// Definindo associações
 ProductImage.belongsTo(Product, {
     foreignKey: 'product_id',
     as: 'product'
-});
-
-Product.hasMany(ProductImage, {
-    foreignKey: 'product_id',
-    as: 'images'
 });
 
 module.exports = ProductImage;

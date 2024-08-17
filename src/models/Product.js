@@ -1,5 +1,3 @@
-// models/product.js
-
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/conect');
 
@@ -48,5 +46,6 @@ const Product = sequelize.define('Product', {
     tableName: 'products',
     timestamps: true,
 });
+
 
 module.exports = Product;
