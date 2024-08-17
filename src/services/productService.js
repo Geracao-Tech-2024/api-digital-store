@@ -4,16 +4,13 @@ const ProductImage = require("../models/ProductImage");
 const ProductOption = require("../models/ProductOption");
 const Category = require("../models/Category");
 class ProductServices {
-  // produtos deve ter um campo com nome [category_id] que tem os ids correspodentes em product_category
 
   async getAllProducts(req) {
     const { limit, page, fields, match, category_ids, price_range } = req.body;
 
-    // Defina valores padrão
     const pageNumber = page || 1;
     const pageSize = isNaN(parseInt(limit, 10)) ? 12 : parseInt(limit, 10);
 
-    // Construir o filtro de consulta
     let query = {};
 
     if (category_ids && category_ids.length > 0) {
@@ -35,7 +32,6 @@ class ProductServices {
       ];
     }
 
-    // Consultar produtos com os filtros
     let produtos = await Product.findAll({
       where: query,
       attributes: { exclude: ['createdAt', 'updatedAt'] }
@@ -152,7 +148,6 @@ class ProductServices {
     });
     const categoryIds = categories.map(cat => cat.category_id);
 
-    // Obter imagens
     const images = await ProductImage.findAll({
       attributes: ['id', 'path'], // Apenas os campos necessários
       where: { product_id: produto.id }
