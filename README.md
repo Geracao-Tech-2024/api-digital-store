@@ -64,7 +64,7 @@ project-root/
 ```
 
 
-## Seção 01 - Criação das tabelas
+## Seção - Criação das tabelas
 
 <details>
    <summary><strong>Criar a tabela de usuários</strong></summary><br>
