@@ -2,6 +2,7 @@ const Product = require("../models/Product");
 const ProductCategory = require("../models/ProductCategory");
 const ProductImage = require("../models/ProductImage");
 const ProductOption = require("../models/ProductOption");
+const Category = require("../models/Category");
 class ProductServices {
   // produtos deve ter um campo com nome [category_id] que tem os ids correspodentes em product_category
 
@@ -191,33 +192,6 @@ class ProductServices {
     const {
       enabled,
       name,
-      image,
-      stock,
-      description,
-      price,
-      price_with_discount,
-      category_ids,
-      images,
-      options,
-    } = req.body;
-
-    if (
-      !enabled ||
-      !name ||
-      !slug ||
-      !stock ||
-      !description ||
-      !price ||
-      !price_with_discount ||
-      !Array.isArray(category_ids) ||
-      !Array.isArray(images) ||
-      !Array.isArray(options)
-    ) {
-      return { status: "400", message: "Bad Request" };
-    }
-    const newProduct = {
-      enabled,
-      name,
       slug,
       stock,
       description,
@@ -225,11 +199,205 @@ class ProductServices {
       price_with_discount,
       category_ids,
       images,
-      options,
-    };
-    await Product.create(newProduct);
-    return { status: "201", message: "Created" };
+      options
+    } = req.body;
+
+    // Validar a entrada principal
+    if (!name || !slug || !price || !price_with_discount) {
+      return { status: 400, message: "Missing required fields: name, slug, price, or price_with_discount" };
+    }
+
+    // Criar o produto
+    const produto = await Product.create({
+      enabled,
+      name,
+      slug,
+      stock,
+      description,
+      price,
+      price_with_discount
+    });
+
+    // Criar categorias
+    if (category_ids) {
+      const validCategories = await Category.findAll({
+        where: { id: category_ids }
+      });
+      const validCategoryIds = validCategories.map(cat => cat.id);
+      const invalidCategoryIds = category_ids.filter(id => !validCategoryIds.includes(id));
+      if (invalidCategoryIds.length > 0) {
+        return { status: 400, message: `Invalid category IDs: ${invalidCategoryIds.join(', ')}` };
+      }
+      const newCategories = validCategoryIds.map(category_id => ({
+        product_id: produto.id,
+        category_id
+      }));
+      await ProductCategory.bulkCreate(newCategories);
+    }
+
+    // Criar imagens
+    if (images) {
+      const newImages = images.map(image => ({
+        product_id: produto.id,
+        path: image.content
+      }));
+      await ProductImage.bulkCreate(newImages);
+    }
+
+    // Criar opções
+    if (options) {
+      for (const option of options) {
+        const newOption = { ...option };
+
+        // Ajustar valor do radius para número
+        if (newOption.radius) {
+          const radiusNumber = parseFloat(newOption.radius);
+          if (!isNaN(radiusNumber)) {
+            newOption.radius = radiusNumber;
+          } else {
+            return { status: 400, message: `Invalid radius value: ${newOption.radius}` };
+          }
+        }
+
+        // Ajustar value e values para string
+        if (newOption.values) {
+          if (Array.isArray(newOption.values)) {
+            newOption.values = newOption.values.join(','); // Converter array para string separada por vírgulas
+          } else {
+            return { status: 400, message: `Invalid values type: ${typeof newOption.values}` };
+          }
+        } else if (newOption.value) {
+          newOption.values = newOption.value.toString(); // Converter value para string
+          delete newOption.value; // Remover o campo value se values estiver presente
+        } else {
+          newOption.values = ''; // Garantir que values nunca seja null
+        }
+
+        await ProductOption.create({
+          ...newOption,
+          product_id: produto.id
+        });
+      }
+    }
+
+    return { status: 201, message: produto };
   }
+
+  async updateProduct(req) {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    // Consultar o produto pelo ID
+    let produto = await Product.findOne({
+      where: { id },
+      attributes: { exclude: ['createdAt', 'updatedAt'] }
+    });
+
+    if (!produto) {
+      return { status: 404, message: "Product not found" };
+    }
+
+    // Atualizar os dados principais do produto
+    await produto.update({
+      enabled: updateData.enabled,
+      name: updateData.name,
+      slug: updateData.slug,
+      stock: updateData.stock,
+      description: updateData.description,
+      price: updateData.price,
+      price_with_discount: updateData.price_with_discount,
+    });
+
+    // Atualizar categorias
+    if (updateData.category_ids) {
+      const validCategories = await Category.findAll({
+        where: { id: updateData.category_ids }
+      });
+      const validCategoryIds = validCategories.map(cat => cat.id);
+      const invalidCategoryIds = updateData.category_ids.filter(id => !validCategoryIds.includes(id));
+      if (invalidCategoryIds.length > 0) {
+        return { status: 400, message: `Invalid category IDs: ${invalidCategoryIds.join(', ')}` };
+      }
+      await ProductCategory.destroy({ where: { product_id: id } });
+      const newCategories = validCategoryIds.map(category_id => ({
+        product_id: id,
+        category_id
+      }));
+      await ProductCategory.bulkCreate(newCategories);
+    }
+
+    // Atualizar imagens
+    if (updateData.images) {
+      for (const image of updateData.images) {
+        if (image.deleted && image.id) {
+          await ProductImage.destroy({ where: { id: image.id, product_id: id } });
+        } else if (image.id) {
+          await ProductImage.update(
+            { path: image.content },
+            { where: { id: image.id, product_id: id } }
+          );
+        } else {
+          await ProductImage.create({
+            product_id: id,
+            path: image.content
+          });
+        }
+      }
+    }
+
+    // Atualizar opções
+    if (updateData.options) {
+      for (const option of updateData.options) {
+        const updatedOption = { ...option };
+
+        // Ajustar valor do radius se necessário
+        if (updatedOption.radius) {
+          const radiusMatch = updatedOption.radius.match(/^(\d+)(px)?$/);
+          if (radiusMatch) {
+            // Obter o valor numérico
+            updatedOption.radius = parseFloat(radiusMatch[1]);
+          } else {
+            return { status: 400, message: `Invalid radius value: ${updatedOption.radius}` };
+          }
+        }
+
+        // Ajustar values e value para string
+        if (updatedOption.values) {
+          if (Array.isArray(updatedOption.values)) {
+            updatedOption.values = updatedOption.values.join(','); // Converter array para string separada por vírgulas
+          } else {
+            return { status: 400, message: `Invalid values format: ${updatedOption.values}` };
+          }
+        }
+
+        if (updatedOption.value) {
+          if (Array.isArray(updatedOption.value)) {
+            updatedOption.value = updatedOption.value.join(','); // Converter array para string separada por vírgulas
+          } else {
+            return { status: 400, message: `Invalid value format: ${updatedOption.value}` };
+          }
+        }
+
+        // Atualizar ou criar opções
+        if (updatedOption.deleted && updatedOption.id) {
+          await ProductOption.destroy({ where: { id: updatedOption.id, product_id: id } });
+        } else if (updatedOption.id) {
+          await ProductOption.update(
+            updatedOption,
+            { where: { id: updatedOption.id, product_id: id } }
+          );
+        } else {
+          await ProductOption.create({
+            ...updatedOption,
+            product_id: id
+          });
+        }
+      }
+    }
+
+    return { status: 204, message: "" };
+  }
+
   async deleteProduct(req) {
     const { id } = req.params;
     const product = await Product.findByPk(id);

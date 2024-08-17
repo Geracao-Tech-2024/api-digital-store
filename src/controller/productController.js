@@ -27,7 +27,14 @@ class productController {
       resposta.status(500).send(erro.message);
     }
   }
-
+  async updateProduct(requisicao, resposta) {
+    try {
+      const resp = await productService.updateProduct(requisicao);
+      resposta.status(resp.status).send(resp.message);
+    } catch (error) {
+      resposta.status(500).send(error.message);
+    }
+  }
   async deleteProduct(requisicao, resposta) {
     try {
       const resp = await productService.deleteProduct(requisicao);
