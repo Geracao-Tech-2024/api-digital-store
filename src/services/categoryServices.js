@@ -36,7 +36,9 @@ class CategoriesServices {
     // Ignora a paginação se limit for -1
     if (limit === -1) {
       // Retorna todas as categorias
-      return { status: 200, message: dadosCategory };
+      // console.log('Dados de categoria:');
+      // console.log(dadosCategory);
+      return { status: 200, message: {data: dadosCategory} };
     } else {
       // Define limit padrão como 12, caso limit seja inválido
       if (isNaN(limit) || limit < 1) {
@@ -55,7 +57,9 @@ class CategoriesServices {
       // Aplica paginação
       dadosCategory = dadosCategory.slice(startIndex, endIndex);
   
-      return { status: 200, message: dadosCategory };
+      console.log('Dados de categoria:');
+      console.log(dadosCategory);
+      return { status: 200, message: {data: dadosCategory} };
     }
   }
  
