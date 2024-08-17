@@ -41,6 +41,15 @@ arquivoSql.sql
 ```
 npm start
 ```
+## 🔧 Installing Test Dependencies
+
+1. Para garantir que todas as dependências necessárias para os testes sejam instaladas corretamente, siga os passos abaixo:
+
+```
+npm install --save-dev jest
+
+```
+
 
 ## 🛠️  Estrutura do Projeto
 
