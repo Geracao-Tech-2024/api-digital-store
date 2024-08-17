@@ -1,5 +1,7 @@
 const Product = require("../models/Product");
-
+const ProductCategory = require("../models/ProductCategory");
+const ProductImage = require("../models/ProductImage");
+const ProductOption = require("../models/ProductOption");
 class ProductServices {
   // produtos deve ter um campo com nome [category_id] que tem os ids correspodentes em product_category
 
@@ -14,67 +16,120 @@ class ProductServices {
     let query = {};
 
     if (category_ids && category_ids.length > 0) {
-        query.category_id = { $in: category_ids };
+      query.category_id = { [Op.in]: category_ids };
     }
 
     if (price_range) {
-        const [min, max] = price_range.split('-').map(Number);
-        if (!isNaN(min) && !isNaN(max)) {
-            query.price = { $gte: min, $lte: max };
-        }
+      const [min, max] = price_range.split('-').map(Number);
+      if (!isNaN(min) && !isNaN(max)) {
+        query.price = { [Op.gte]: min, [Op.lte]: max };
+      }
     }
 
     if (match) {
-        const matchLower = match.toLowerCase();
-        query.$or = [
-            { name: { $regex: matchLower, $options: 'i' } },
-            { description: { $regex: matchLower, $options: 'i' } }
-        ];
+      const matchLower = match.toLowerCase();
+      query[Op.or] = [
+        { name: { [Op.iLike]: `%${matchLower}%` } },
+        { description: { [Op.iLike]: `%${matchLower}%` } }
+      ];
     }
 
     // Consultar produtos com os filtros
-    let produtos = await Product.findAll({ where: query });
+    let produtos = await Product.findAll({
+      where: query,
+      attributes: { exclude: ['createdAt', 'updatedAt'] }
+    });
 
     if (!produtos || produtos.length === 0) {
-        return { status: 404, message: "Not found" };
+      return { status: 404, message: "Not found" };
     }
+
+    const totalProducts = produtos.length;
+
+    // Obter IDs das categorias, imagens, e opções para cada produto
+    const productsWithDetails = await Promise.all(produtos.map(async prod => {
+      // Obter IDs das categorias
+      const categories = await ProductCategory.findAll({
+        attributes: ['category_id'], // Apenas o campo necessário
+        where: { product_id: prod.id }
+      });
+      const categoryIds = categories.map(cat => cat.category_id);
+
+      // Obter imagens
+      const images = await ProductImage.findAll({
+        attributes: ['id', 'path'], // Apenas os campos necessários
+        where: { product_id: prod.id }
+      });
+      const imageDetails = images.map(img => ({
+        id: img.id,
+        content: img.path
+      }));
+
+      // Obter opções
+      const options = await ProductOption.findAll({
+        attributes: { exclude: ['createdAt', 'updatedAt'] },
+        where: { product_id: prod.id }
+      });
+      const optionDetails = options.map(opt => opt.toJSON());
+
+      return {
+        ...prod.toJSON(),
+        category_ids: categoryIds,
+        images: imageDetails,
+        options: optionDetails
+      };
+    }));
 
     // Filtrar campos
     if (fields) {
-        const fieldsArray = fields.split(',');
-        produtos = produtos.map(prod => {
-            let filteredProd = { id: prod.id };
-            fieldsArray.forEach(field => {
-                if (prod[field] !== undefined) {
-                    filteredProd[field] = prod[field];
-                }
-            });
-            return filteredProd;
+      const fieldsArray = fields.split(',');
+      produtos = productsWithDetails.map(prod => {
+        let filteredProd = { id: prod.id };
+        fieldsArray.forEach(field => {
+          if (prod[field] !== undefined) {
+            filteredProd[field] = prod[field];
+          }
         });
+        return filteredProd;
+      });
+    } else {
+      produtos = productsWithDetails;
     }
 
     // Ignorar paginação se limit for -1
     if (pageSize === -1) {
-        return { status: 200, message: { data: produtos } };
-    } else {
-        const startIndex = (pageNumber - 1) * pageSize;
-        const endIndex = startIndex + pageSize;
-
-        // Garantir que o índice final não ultrapasse o tamanho do array
-        if (startIndex >= produtos.length) {
-            return { status: 200, message: [] }; // Página solicitada não existe
+      return {
+        status: 200,
+        message: {
+          data: produtos,
+          total: totalProducts,
+          limit: pageSize,
+          page: pageNumber
         }
+      };
+    } else {
+      const startIndex = (pageNumber - 1) * pageSize;
+      const endIndex = startIndex + pageSize;
 
-        // Aplicar paginação
-        produtos = produtos.slice(startIndex, endIndex);
+      // Garantir que o índice final não ultrapasse o tamanho do array
+      if (startIndex >= produtos.length) {
+        return { status: 200, message: [] }; // Página solicitada não existe
+      }
 
-        return { status: 200, message: { data: produtos } };
+      // Aplicar paginação
+      produtos = produtos.slice(startIndex, endIndex);
+
+      return {
+        status: 200,
+        message: {
+          data: produtos,
+          total: totalProducts,
+          limit: pageSize,
+          page: pageNumber
+        }
+      };
     }
-}
-
-
-
-
+  }
 
   async getProductById(id) {
     try {
