@@ -131,26 +131,60 @@ class ProductServices {
     }
   }
 
-  async getProductById(id) {
-    try {
-      const product = await Product.findByPk(id);
-      if (product) {
-        return {
-          status: 200,
-          message: product,
-        };
-      } else {
-        return {
-          status: 404,
-          message: "Product not found",
-        };
-      }
-    } catch (error) {
-      return {
-        status: 500,
-        message: error.message,
-      };
+  async getProductById(req) {
+    const { id } = req.params;
+
+    // Consultar o produto pelo ID
+    const produto = await Product.findOne({
+      where: { id },
+      attributes: { exclude: ['createdAt', 'updatedAt'] }
+    });
+
+    if (!produto) {
+      return { status: 404, message: "Product not found" };
     }
+
+    // Obter IDs das categorias
+    const categories = await ProductCategory.findAll({
+      attributes: ['category_id'], // Apenas o campo necessário
+      where: { product_id: produto.id }
+    });
+    const categoryIds = categories.map(cat => cat.category_id);
+
+    // Obter imagens
+    const images = await ProductImage.findAll({
+      attributes: ['id', 'path'], // Apenas os campos necessários
+      where: { product_id: produto.id }
+    });
+    const imageDetails = images.map(img => ({
+      id: img.id,
+      content: img.path
+    }));
+
+    // Obter opções
+    const options = await ProductOption.findAll({
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+      where: { product_id: produto.id }
+    });
+    const optionDetails = options.map(opt => opt.toJSON());
+
+    // Retornar o produto com categorias, imagens e opções
+    return {
+      status: 200,
+      message: {
+        id: produto.id,
+        enabled: produto.enabled,
+        name: produto.name,
+        slug: produto.slug,
+        stock: produto.stock,
+        description: produto.description,
+        price: produto.price,
+        price_with_discount: produto.price_with_discount,
+        category_ids: categoryIds,
+        images: imageDetails,
+        options: optionDetails
+      }
+    };
   }
 
   async postProducts(req) {
