@@ -395,18 +395,27 @@ class ProductServices {
 
   async deleteProduct(req) {
     const { id } = req.params;
-    const product = await Product.findByPk(id);
 
-    if (!product) {
-      return { message: "Produto não encontrado", status: 404 };
-    }
-
-    await Product.destroy({
-      where: { id: `${id}` },
+    // Consultar o produto pelo ID
+    const produto = await Product.findOne({
+        where: { id },
+        attributes: { exclude: ['createdAt', 'updatedAt'] }
     });
 
-    return { message: "Produto deletado com sucesso", status: 204 };
-  }
+    if (!produto) {
+        return { status: 404, message: "Product not found" };
+    }
+
+    // Excluir associações relacionadas
+    await ProductCategory.destroy({ where: { product_id: id } });
+    await ProductImage.destroy({ where: { product_id: id } });
+    await ProductOption.destroy({ where: { product_id: id } });
+
+    // Excluir o produto
+    await produto.destroy();
+
+    return { status: 204, message: "" };
+}
 }
 
 module.exports = new ProductServices();
