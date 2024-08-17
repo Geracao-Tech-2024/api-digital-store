@@ -28,56 +28,43 @@ class UsuarioServices {
     }
   }
 
-  postUsuario(req) {
-    return new Promise((resolve, reject) => {
+  async postUsuario(req, res) {
+    try {
       const { firstname, surname, email, password, confirmPassword } = req.body;
-
-      console.log("Request Body:", req.body);
-
+  
+  
       if (!firstname || !surname || !email || !password || !confirmPassword) {
-        return resolve({
-          message: "Todos os campos são obrigatórios",
-          status: 400,
-        });
+        return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
       }
+  
       if (password !== confirmPassword) {
-        return resolve({ message: "As senhas não coincidem", status: 400 });
+        return res.status(400).json({ message: 'As senhas não coincidem' });
       }
-
-      User.findOne({ email })
-        .then((existingUser) => {
-          if (existingUser) {
-            return resolve({ message: "Email já está em uso", status: 400 });
-          }
-
-          const newUser = new User({
-            firstname,
-            surname,
-            email,
-            password,
-          });
-
-          return newUser
-            .save()
-            .then(() =>
-              resolve({ message: "Usuário criado com sucesso", status: 201 })
-            )
-            .catch((error) =>
-              resolve({
-                message: "Erro ao criar o usuário",
-                status: 500,
-                details: error.message,
-              })
-            );
-        })
-        .catch((error) =>
-          resolve({
-            message: "Erro ao criar o usuário",
-            status: 500,
-            details: error.message,
-          })
-        );
-    });
+  
+      const existingUser = await User.findOne({ where: { email } });
+      if (existingUser) {
+        return res.status(400).json({ message: 'Email já está em uso' });
+      }
+  
+     
+      const hashedPassword = await this.passwordEncoded(password);
+  
+      const newUser = new User({
+        firstname,
+        surname,
+        email,
+        password: hashedPassword,
+      });
+  
+     
+      await newUser.save();
+  
+     
+      return res.status(201).json({ message: 'Usuário criado com sucesso' });
+    } catch (error) {
+  
+      return res.status(500).json({ message: 'Erro ao criar o usuário', details: error.message });
+    }
   }
 
 
