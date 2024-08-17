@@ -6,8 +6,8 @@ const category = express();
 
 category.get('/:id', Controller.getCategoryById)
 category.get('/', Controller.getAllCategorys);
-category.put('/:id', Controller.updateCategory);
-category.delete('/:id', Controller.deleteCategory);
+category.put('/:id', jwt_alth.verifyJWT, Controller.updateCategory);
+category.delete('/:id', jwt_alth.verifyJWT, Controller.deleteCategory);
 category.post('/', jwt_alth.verifyJWT,Controller.postCategory);
 
 module.exports = category;
