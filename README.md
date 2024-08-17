@@ -66,13 +66,37 @@ project-root/
 
 ## Seção 01 - Criação das tabelas
 
-- 
 <details>
-     <summary><strong>tabela de usuários</strong></summary><br>
-     - **id**: Coluna do tipo INTEGER 
-    - **firstname**: Coluna do tipo STRING 
-    - **surname**: Coluna do tipo STRING 
-    - **email**: Coluna do tipo STRING 
-    - **password**: Coluna do tipo STRING 
+   <summary><strong>Criar a tabela de usuários</strong></summary><br>
+
+Criar a tabela de usuários no banco de dados utilizando o Sequelize ORM. A tabela contém as colunas a seguir:
+
+- **id**: Coluna do tipo INTEGER 
+- **firstname**: Coluna do tipo STRING 
+- **surname**: Coluna do tipo STRING 
+- **email**: Coluna do tipo STRING 
+- **password**: Coluna do tipo STRING 
+
+
+
+        
+
+</details>
+
+<details>
+  <summary><strong>Criar a tabela de produtos</strong></summary><br>
+
+ Criar a tabela de produtos no banco de dados utilizando o Sequelize ORM. A tabela contém as colunas a seguir:
+
+- **id**: Coluna do tipo INTEGER 
+- **enabled**: Coluna do tipo BOOLEAN 
+- **name**: Coluna do tipo STRING 
+- **slug**: Coluna do tipo STRING 
+- **use_in_menu**: Coluna do tipo BOOLEAN 
+- **stock**: Coluna do tipo INTEGER 
+- **description**: Coluna do tipo STRING 
+- **price**: Coluna do tipo FLOAT 
+- **price_with_discount**: Coluna do tipo FLOAT 
+
 
 </details>
