@@ -32,7 +32,7 @@ SECRET_JWT = JW_Inglish_or_spanish?T
 4. Baixe o arquivo sql, que está no projeto, importe-o para dbeaver ou workbench para executar as tabelas ja criadas.
 
 ```
-arquivoSql.sql
+esquema banco .mwb
 ```
 
 
