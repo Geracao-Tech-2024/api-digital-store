@@ -10,7 +10,7 @@ beforeAll(async () => {
     });
 
     // Inicie o servidor após garantir que o banco de dados está conectado
-    server = app.listen(4000, 'localhost', () => {
+    server = app.listen(4002, 'localhost', () => {
         console.log('Servidor rodando na porta http://localhost:4000');
     });
 });
@@ -118,7 +118,7 @@ describe('Category API Integration Tests', () => {
     describe('DELETE /v1/category/:id', () => {
         it('Deve deletar uma categoria existente', async () => {
             // tem que mudar o id para uma categoria existente no banco de dados
-            const categoryId = 69; 
+            const categoryId = 71; 
 
             const deleteRes = await request(app)
                 .delete(`/v1/category/${categoryId}`)

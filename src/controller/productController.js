@@ -4,7 +4,7 @@ class productController {
   async getAllProducts(req,res){
     try{
       let resp = await productService.getAllProducts(req);
-      res.status(resp.status).send(resp.message);
+      res.status(resp.status).json(resp.message);
     } catch (erro) {
       res.status(500).send(erro.message);
     }
@@ -13,7 +13,7 @@ class productController {
   async getProductById(req, res) {
     try {
       const resp = await productService.getProductById(req);
-      res.status(resp.status).send(resp.message);
+      res.status(resp.status).json(resp.message);
     } catch (error) {
       res.status(500).send(error.message);
     }
@@ -22,7 +22,7 @@ class productController {
   async postProducts(requisicao, resposta) {
     try {
       let retorno = await productService.postProducts(requisicao);
-      resposta.status(retorno.status).send(retorno.message);
+      resposta.status(retorno.status).json(retorno.message);
     } catch (erro) {
       resposta.status(500).send(erro.message);
     }
@@ -30,7 +30,7 @@ class productController {
   async updateProduct(requisicao, resposta) {
     try {
       const resp = await productService.updateProduct(requisicao);
-      resposta.status(resp.status).send(resp.message);
+      resposta.status(resp.status).json(resp.message);
     } catch (error) {
       resposta.status(500).send(error.message);
     }
@@ -38,7 +38,7 @@ class productController {
   async deleteProduct(requisicao, resposta) {
     try {
       const resp = await productService.deleteProduct(requisicao);
-      resposta.status(resp.status).send(resp.message);
+      resposta.status(resp.status).json(resp.message);
     } catch (error) {
       resposta.status(500).send(error.message);
     }

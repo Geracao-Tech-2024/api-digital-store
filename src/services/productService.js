@@ -185,23 +185,52 @@ class ProductServices {
 
   async postProducts(req) {
     const {
-      enabled,
+      enabled = true, 
       name,
       slug,
-      stock,
-      description,
+      stock = 0, 
+      description = '', 
       price,
       price_with_discount,
-      category_ids,
-      images,
-      options
+      category_ids = [], 
+      images = [], 
+      options = [] 
     } = req.body;
-
+  
     // Validar a entrada principal
-    if (!name || !slug || !price || !price_with_discount) {
+    if (!name || !slug || price === undefined || price_with_discount === undefined) {
       return { status: 400, message: "Missing required fields: name, slug, price, or price_with_discount" };
     }
-
+  
+    // Validar o formato das imagens
+    if (images.length > 0) {
+      const isValidImages = images.every(image =>
+        image.type && image.content && typeof image.type === 'string' && typeof image.content === 'string'
+      );
+      if (!isValidImages) {
+        return { status: 400, message: "Invalid images format. Each image must have 'type' and 'content' as strings." };
+      }
+    }
+  
+    // Validar o formato das opções
+    if (options.length === 0) {
+      return { status: 400, message: "Options are required and cannot be empty." };
+    }
+    
+    const isValidOptions = options.every(option => {
+      return (
+        option.title && typeof option.title === 'string' &&
+        option.shape && typeof option.shape === 'string' &&
+        option.type && typeof option.type === 'string' &&
+        (Array.isArray(option.value) || typeof option.value === 'string') ||
+        (Array.isArray(option.values) || typeof option.values === 'string')
+      );
+    });
+    
+    if (!isValidOptions) {
+      return { status: 400, message: "Invalid options format. Each option must include 'title', 'shape', 'type', and valid 'value' and 'values'." };
+    }
+  
     // Criar o produto
     const produto = await Product.create({
       enabled,
@@ -212,9 +241,9 @@ class ProductServices {
       price,
       price_with_discount
     });
-
+  
     // Criar categorias
-    if (category_ids) {
+    if (category_ids.length > 0) {
       const validCategories = await Category.findAll({
         where: { id: category_ids }
       });
@@ -229,21 +258,21 @@ class ProductServices {
       }));
       await ProductCategory.bulkCreate(newCategories);
     }
-
+  
     // Criar imagens
-    if (images) {
+    if (images.length > 0) {
       const newImages = images.map(image => ({
         product_id: produto.id,
         path: image.content
       }));
       await ProductImage.bulkCreate(newImages);
     }
-
+  
     // Criar opções
-    if (options) {
+    if (options.length > 0) {
       for (const option of options) {
         const newOption = { ...option };
-
+  
         // Ajustar valor do radius para número
         if (newOption.radius) {
           const radiusNumber = parseFloat(newOption.radius);
@@ -253,7 +282,7 @@ class ProductServices {
             return { status: 400, message: `Invalid radius value: ${newOption.radius}` };
           }
         }
-
+  
         // Ajustar value e values para string
         if (newOption.values) {
           if (Array.isArray(newOption.values)) {
@@ -267,17 +296,17 @@ class ProductServices {
         } else {
           newOption.values = ''; // Garantir que values nunca seja null
         }
-
+  
         await ProductOption.create({
           ...newOption,
           product_id: produto.id
         });
       }
     }
-
-    return { status: 201, message: produto };
+  
+    return { status: 201, message: 'Produto criado' };
   }
-
+  
   async updateProduct(req) {
     const { id } = req.params;
     const updateData = req.body;
@@ -398,12 +427,12 @@ class ProductServices {
 
     // Consultar o produto pelo ID
     const produto = await Product.findOne({
-        where: { id },
-        attributes: { exclude: ['createdAt', 'updatedAt'] }
+      where: { id },
+      attributes: { exclude: ['createdAt', 'updatedAt'] }
     });
 
     if (!produto) {
-        return { status: 404, message: "Product not found" };
+      return { status: 404, message: "Product not found" };
     }
 
     // Excluir associações relacionadas
@@ -415,7 +444,7 @@ class ProductServices {
     await produto.destroy();
 
     return { status: 204, message: "" };
-}
+  }
 }
 
 module.exports = new ProductServices();

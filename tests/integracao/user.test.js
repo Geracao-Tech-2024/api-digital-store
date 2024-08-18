@@ -9,7 +9,7 @@ beforeAll(async () => {
     await new Promise((resolve, reject) => {
         app.on('db_ok', resolve);
     }).finally(() => {
-        server = app.listen(4000, () => {
+        server = app.listen(4003, () => {
             console.log('Servidor rodando na porta 3000');
         });
     });
@@ -35,7 +35,7 @@ describe('User API Integration Tests', () => {
                     surname: 'Doe',
 
                     // tem que mudar para um email nao existente
-                    email: 'joh777@example.com',
+                    email: 'joh999@example.com',
 
                     password: 'password123',
                     confirmPassword: 'password123',
@@ -153,7 +153,7 @@ describe('User API Integration Tests', () => {
 
             // Trocar o ID conforme necessário
             // ID do usuário existente no banco de dados
-            const userId = 52;
+            const userId = 54;
 
             const tokenRes = await request(app)
                 .post('/v1/user/token')
