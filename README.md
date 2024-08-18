@@ -45,8 +45,16 @@ npm start
 
 1. Para garantir que todas as dependências necessárias para os testes sejam instaladas corretamente, siga os passos abaixo:
 
+2. Primeiro instale o Jest para a para configurar um ambiente de testes unitários, permitindo verificar o comportamento das funções e módulos isoladamente, facilitando a detecção e correção de erros: 
+
 ```
 npm install --save-dev jest
+
+```
+3. Em seguida instale o Supertest para realizar testes de integração, simulando requisições HTTP e verificando as respostas das rotas e APIs, garantindo que a aplicação funcione corretamente:
+
+```
+npm install --save-dev supertest
 
 ```
 
