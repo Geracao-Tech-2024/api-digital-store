@@ -1,7 +1,7 @@
 ## 📋 Requirements
 
 - Node.js (v12 ou posterior)
-- npm (v6 ou posterior) ou fio (v1 ou posterior)
+- npm (v6 ou posterior) ou yarn (v1 ou posterior)
 
 ## 🔧 Installation
 
