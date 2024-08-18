@@ -79,7 +79,9 @@ project-root/
 └── package.json
 
 ```
+## 🛠️  Schema do banco de dados
 
+![image](schema.png)
 
 ## Seção 01 - Criação do banco de dados
 
