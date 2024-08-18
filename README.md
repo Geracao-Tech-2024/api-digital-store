@@ -1,7 +1,7 @@
 ## 📋 Requirements
 
 - Node.js (v12 ou posterior)
-- npm (v6 ou posterior) ou fio (v1 ou posterior)
+- npm (v6 ou posterior) ou yarn (v1 ou posterior)
 
 ## 🔧 Installation
 
@@ -32,7 +32,7 @@ SECRET_JWT = JW_Inglish_or_spanish?T
 4. Baixe o arquivo sql, que está no projeto, importe-o para dbeaver ou workbench para executar as tabelas ja criadas.
 
 ```
-arquivoSql.sql
+esquema banco .mwb
 ```
 
 
@@ -79,7 +79,9 @@ project-root/
 └── package.json
 
 ```
+## 🛠️  Schema do banco de dados
 
+![image](schema.png)
 
 ## Seção 01 - Criação do banco de dados
 
