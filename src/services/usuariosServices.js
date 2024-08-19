@@ -67,9 +67,16 @@ class UsuarioServices {
 
   async putUsuario(req) {
     const { id } = req.params;
-
+    const { firstname, surname, email } = req.body;
+    
     try {
+
       let usuario = await User.findByPk(id);
+      
+      if (!firstname && !surname && !email) {
+        return { message: "At least one field (firstname, surname, email) is required", status: 400 };
+      }
+      
       if (!usuario) {
         return { message: "User not found", status: 404 };
       }
