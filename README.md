@@ -55,12 +55,15 @@ npm install
 3. Crie dentro da pasta do projeto clonado o arquivo .ENV, passando estes dados:
 
 ```
-DB_NAME = railway
-DB_USER = root
-DB_PASS = NcNqyjbOYKMwCrkfJOYQYXyvtDsgescv
-DB_HOST = monorail.proxy.rlwy.net
-DB_PORT = 24130
-SECRET_JWT = JW_Inglish_or_spanish?T
+DB_NAME = 
+DB_USER = 
+DB_PASS = 
+DB_HOST = 
+DB_PORT = 
+SECRET_JWT = 
+
+email_user = 
+password_user = 
 ```
 
 4. Baixe o arquivo sql, que está no projeto, importe-o para dbeaver ou workbench para executar as tabelas ja criadas.
