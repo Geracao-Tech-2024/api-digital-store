@@ -4,6 +4,6 @@ const porta = process.env.PORT || 3500;
 app.on('db_ok', ()=>{
     console.log('iniciando o servidor...');
     app.listen(porta, 'localhost', ()=>{
-        console.log('rodando na porta: http://localhost:3500');
+        console.log('rodando na porta: http://localhost:', porta);
     });
 });
