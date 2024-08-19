@@ -1,3 +1,37 @@
+## API hospedada
+- Link para acessar API:
+```
+https://api-digital-store.onrender.com
+```
+
+- Documentação
+```
+ https://documenter.getpostman.com/view/37358777/2sA3s9DTue
+```
+
+<details>
+  <summary>Introdução à API</summary>
+
+  ### Introdução à API Digital Store
+  
+  A **API Digital Store**, hospedada em `https://api-digital-store.onrender.com`, é uma poderosa ferramenta desenvolvida para gerenciar de forma eficiente os produtos de uma loja digital. Com ela, você pode realizar operações completas de CRUD (Create, Read, Update, Delete), acessar conteúdos específicos, e muito mais, garantindo flexibilidade e controle total sobre os dados da sua aplicação.
+  
+  Essa API foi desenvolvida com a colaboração de um time talentoso e dedicado, composto pelos membros **Lucas Maciel**, **Osmar Mendes**, **Marcos Levi**, **Wendell Oliveira**, e **Mateus Jairan**. Juntos, eles criaram uma solução robusta e versátil, focada em atender às necessidades tanto de desenvolvedores quanto de empresas que buscam otimizar a gestão de produtos em suas plataformas digitais.
+  
+  ### Funcionalidades Principais
+- **CRUD Completo**: Crie, visualize, edite e exclua produtos facilmente.
+- **Acesso a Conteúdos**: Recupere informações detalhadas de produtos, categorias e outros dados relevantes.
+- **Integração Simples**: Uma API fácil de usar, com endpoints intuitivos, perfeita para integração em diferentes tipos de sistemas.
+- **Login e Autenticação com JWT**: Garanta a segurança da sua aplicação com um sistema robusto de login e autenticação utilizando JSON Web Tokens (JWT), protegendo o acesso aos dados e operações críticas.
+
+  
+</details>
+
+
+
+
+
+
 ## 📋 Requirements
 
 - Node.js (v12 ou posterior)
