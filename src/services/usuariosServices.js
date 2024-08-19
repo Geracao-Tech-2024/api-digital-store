@@ -68,15 +68,15 @@ class UsuarioServices {
   async putUsuario(req) {
     const { id } = req.params;
     const { firstname, surname, email } = req.body;
-    
+
     try {
 
       let usuario = await User.findByPk(id);
-      
+
       if (!firstname && !surname && !email) {
         return { message: "At least one field (firstname, surname, email) is required", status: 400 };
       }
-      
+
       if (!usuario) {
         return { message: "User not found", status: 404 };
       }
@@ -127,18 +127,22 @@ class UsuarioServices {
   }
 
   async gerarToken(req) {
-    let usuario = await User.findOne({ where: { email: `${req.body.email}` } });
-    if (usuario.id && usuario.password) {
-      let veriifica_senha = await this.passwordCompare(req.body.password, usuario.password);
-      if (veriifica_senha) {
-        let token = await createTokenJWT(usuario.id);
-        console.log(token)
-        return { status: 200, messege: { token: token } }
+    try {
+      let usuario = await User.findOne({ where: { email: `${req.body.email}` } });
+      if (usuario.id && usuario.password) {
+        let veriifica_senha = await this.passwordCompare(req.body.password, usuario.password);
+        if (veriifica_senha) {
+          let token = await createTokenJWT(usuario.id);
+          console.log(token)
+          return { status: 200, messege: { token: token } }
+        } else {
+          return { status: 400, messege: 'dados incorretos' }
+        }
+
       } else {
         return { status: 400, messege: 'dados incorretos' }
       }
-
-    } else {
+    } catch (error) {
       return { status: 400, messege: 'dados incorretos' }
     }
   }
