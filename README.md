@@ -1,9 +1,16 @@
 ## API hospedada
+- Link para acessar API:
 ```
 https://api-digital-store.onrender.com
 ```
+
+- Documentação
+```
+ https://documenter.getpostman.com/view/37358777/2sA3s9DTue
+```
+
 <details>
-  <summary>API</summary>
+  <summary>Introdução à API</summary>
 
   ### Introdução à API Digital Store
   
@@ -20,18 +27,7 @@ https://api-digital-store.onrender.com
   
 </details>
 
-<details>
-  <summary>Documentação</summary>
-  
-  ```
-  https://documenter.getpostman.com/view/37358777/2sA3s9DTue
-  ```
-  
 
-  
-
-  
-</details>
 
 
 
