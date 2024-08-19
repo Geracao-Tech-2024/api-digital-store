@@ -3,7 +3,7 @@
 https://api-digital-store.onrender.com
 ```
 <details>
-  <summary>API/</summary>
+  <summary>API</summary>
 
   ### Introdução à API Digital Store
   
