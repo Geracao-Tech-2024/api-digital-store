@@ -9,7 +9,7 @@ https://api-digital-store.onrender.com/v1/product/1
   
   A **API Digital Store**, hospedada em `https://api-digital-store.onrender.com`, é uma poderosa ferramenta desenvolvida para gerenciar de forma eficiente os produtos de uma loja digital. Com ela, você pode realizar operações completas de CRUD (Create, Read, Update, Delete), acessar conteúdos específicos, e muito mais, garantindo flexibilidade e controle total sobre os dados da sua aplicação.
   
-  Essa API foi desenvolvida com a colaboração de um time talentoso e dedicado, composto pelos membros **Lucas Maciel**, **Osmar Mendes**, **Marcos Levi**, **Wendell**, e **Matheus Jairo**. Juntos, eles criaram uma solução robusta e versátil, focada em atender às necessidades tanto de desenvolvedores quanto de empresas que buscam otimizar a gestão de produtos em suas plataformas digitais.
+  Essa API foi desenvolvida com a colaboração de um time talentoso e dedicado, composto pelos membros **Lucas Maciel**, **Osmar Mendes**, **Marcos Levi**, **Wendell Oliveira**, e **Mateus Jairan**. Juntos, eles criaram uma solução robusta e versátil, focada em atender às necessidades tanto de desenvolvedores quanto de empresas que buscam otimizar a gestão de produtos em suas plataformas digitais.
   
   ### Funcionalidades Principais
 - **CRUD Completo**: Crie, visualize, edite e exclua produtos facilmente.
