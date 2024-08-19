@@ -1,3 +1,21 @@
+## API hospedada
+```
+https://api-digital-store.onrender.com/v1/product/1
+```
+1.Como usar?
+<details>
+  <summary><strong> Fazer uma requisição GET:</strong></summary><br>
+
+ Para acessar os dados do produto com ID 1, você precisa fazer uma requisição do tipo GET para a URL fornecida:
+
+- URL: https://api-digital-store.onrender.com/v1/product/1
+- Método HTTP: GET
+- Resposta da API: Quando a requisição for feita corretamente, a API retornará uma resposta em formato JSON, contendo informações detalhadas sobre o produto. Isso pode incluir o nome do produto, descrição, preço, estoque disponível, etc.
+
+
+</details>
+
+
 ## 📋 Requirements
 
 - Node.js (v12 ou posterior)
