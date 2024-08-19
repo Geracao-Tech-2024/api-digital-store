@@ -1,6 +1,6 @@
 ## API hospedada
 ```
-https://api-digital-store.onrender.com/v1/product/1
+https://api-digital-store.onrender.com
 ```
 <details>
   <summary>Introdução à API</summary>
