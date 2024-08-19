@@ -2,7 +2,7 @@
 
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/conect');
-const Product = require('./product'); // Importando o modelo Product para definir a associação
+const Product = require('./Product'); // Importando o modelo Product para definir a associação
 
 const ProductOption = sequelize.define('ProductOption', {
     id: {
