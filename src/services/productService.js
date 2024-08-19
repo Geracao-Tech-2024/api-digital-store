@@ -7,8 +7,21 @@ const Sequelize = require("sequelize");
 class ProductServices {
 
   async getAllProducts(req) {
+    const validParams = ['limit', 'page', 'fields', 'match', 'category_ids', 'price_range'];
+    
+    // Filtra os parâmetros da query que são válidos
+    const queryParams = Object.keys(req.query);
+    const invalidParams = queryParams.filter(param => !validParams.includes(param));
+    
+    // Se houver parâmetros inválidos, retorna erro 400
+    if (invalidParams.length > 0) {
+      return { status: 400, message: `Invalid query parameters: ${invalidParams.join(', ')}` };
+    }
+    
+    // Desestrutura os parâmetros válidos da query
     const { limit, page, fields, match, category_ids, price_range } = req.query;
   
+    // Define valores padrão
     const pageNumber = parseInt(page, 10) || 1;
     const pageSize = parseInt(limit, 10) || 12;
   
@@ -156,6 +169,7 @@ class ProductServices {
       };
     }
   }
+  
   
 
   async getProductById(req) {
