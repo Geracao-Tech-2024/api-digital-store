@@ -3,72 +3,95 @@ const ProductCategory = require("../models/ProductCategory");
 const ProductImage = require("../models/ProductImage");
 const ProductOption = require("../models/ProductOption");
 const Category = require("../models/Category");
+const Sequelize = require("sequelize");
 class ProductServices {
 
   async getAllProducts(req) {
     const { limit, page, fields, match, category_ids, price_range } = req.body;
-
-    const pageNumber = page || 1;
-    const pageSize = isNaN(parseInt(limit, 10)) ? 12 : parseInt(limit, 10);
-
+  
+    const pageNumber = parseInt(page, 10) || 1;
+    const pageSize = parseInt(limit, 10) || 12;
+  
     let query = {};
-
-    if (category_ids && category_ids.length > 0) {
-      query.category_id = { [Op.in]: category_ids };
-    }
-
-    if (price_range) {
-      const [min, max] = price_range.split('-').map(Number);
-      if (!isNaN(min) && !isNaN(max)) {
-        query.price = { [Op.gte]: min, [Op.lte]: max };
+  
+    // Filtro por categorias
+    if (category_ids && typeof category_ids === 'string') {
+      const categoryIdsArray = category_ids.split(',').map(id => parseInt(id, 10));
+      if (categoryIdsArray.length > 0) {
+        query.id = {
+          [Sequelize.Op.in]: Sequelize.literal(
+            `(SELECT product_id FROM product_categories WHERE category_id IN (${categoryIdsArray.join(',')}))`
+          )
+        };
       }
     }
-
-    if (match) {
+  
+    // Filtro por faixa de preço
+    if (price_range && typeof price_range === 'string') {
+      const [min, max] = price_range.split('-').map(Number);
+      if (!isNaN(min) && !isNaN(max)) {
+        query.price = {
+          [Sequelize.Op.between]: [min, max]
+        };
+      } else if (!isNaN(min)) {
+        query.price = {
+          [Sequelize.Op.gte]: min
+        };
+      } else if (!isNaN(max)) {
+        query.price = {
+          [Sequelize.Op.lte]: max
+        };
+      }
+    }
+  
+    // Filtro por termo de busca
+    if (match && typeof match === 'string') {
       const matchLower = match.toLowerCase();
-      query[Op.or] = [
-        { name: { [Op.iLike]: `%${matchLower}%` } },
-        { description: { [Op.iLike]: `%${matchLower}%` } }
+      query[Sequelize.Op.and] = [
+        Sequelize.where(Sequelize.fn('LOWER', Sequelize.col('name')), {
+          [Sequelize.Op.like]: `%${matchLower}%`
+        }),
+        Sequelize.where(Sequelize.fn('LOWER', Sequelize.col('description')), {
+          [Sequelize.Op.like]: `%${matchLower}%`
+        })
       ];
     }
-
-    let produtos = await Product.findAll({
+  
+    // Buscar produtos com base na query
+    const produtos = await Product.findAll({
       where: query,
       attributes: { exclude: ['createdAt', 'updatedAt'] }
     });
-
+  
     if (!produtos || produtos.length === 0) {
       return { status: 404, message: "Not found" };
     }
-
+  
     const totalProducts = produtos.length;
-
-    // Obter IDs das categorias, imagens, e opções para cada produto
+  
+    // Obter IDs das categorias, imagens e opções para cada produto
     const productsWithDetails = await Promise.all(produtos.map(async prod => {
-      // Obter IDs das categorias
       const categories = await ProductCategory.findAll({
-        attributes: ['category_id'], // Apenas o campo necessário
+        attributes: ['category_id'],
         where: { product_id: prod.id }
       });
       const categoryIds = categories.map(cat => cat.category_id);
-
-      // Obter imagens
+  
       const images = await ProductImage.findAll({
-        attributes: ['id', 'path'], // Apenas os campos necessários
+        attributes: ['id', 'path'],
         where: { product_id: prod.id }
       });
       const imageDetails = images.map(img => ({
         id: img.id,
         content: img.path
       }));
-
-      // Obter opções
+  
       const options = await ProductOption.findAll({
         attributes: { exclude: ['createdAt', 'updatedAt'] },
         where: { product_id: prod.id }
       });
       const optionDetails = options.map(opt => opt.toJSON());
-
+  
       return {
         ...prod.toJSON(),
         category_ids: categoryIds,
@@ -76,29 +99,35 @@ class ProductServices {
         options: optionDetails
       };
     }));
-
+  
     // Filtrar campos
-    if (fields) {
+    let produtosFiltered;
+    if (fields && typeof fields === 'string') {
       const fieldsArray = fields.split(',');
-      produtos = productsWithDetails.map(prod => {
-        let filteredProd = { id: prod.id };
+      produtosFiltered = productsWithDetails.map(prod => {
+        let filteredProd = {};
         fieldsArray.forEach(field => {
           if (prod[field] !== undefined) {
             filteredProd[field] = prod[field];
           }
         });
+        // Adicionar dados adicionais
+        filteredProd.id = prod.id;
+        filteredProd.category_ids = prod.category_ids;
+        filteredProd.images = prod.images;
+        filteredProd.options = prod.options;
         return filteredProd;
       });
     } else {
-      produtos = productsWithDetails;
+      produtosFiltered = productsWithDetails;
     }
-
+  
     // Ignorar paginação se limit for -1
     if (pageSize === -1) {
       return {
         status: 200,
         message: {
-          data: produtos,
+          data: produtosFiltered,
           total: totalProducts,
           limit: pageSize,
           page: pageNumber
@@ -107,19 +136,19 @@ class ProductServices {
     } else {
       const startIndex = (pageNumber - 1) * pageSize;
       const endIndex = startIndex + pageSize;
-
+  
       // Garantir que o índice final não ultrapasse o tamanho do array
-      if (startIndex >= produtos.length) {
-        return { status: 200, message: [] }; // Página solicitada não existe
+      if (startIndex >= produtosFiltered.length) {
+        return { status: 200, message: [] };
       }
-
+  
       // Aplicar paginação
-      produtos = produtos.slice(startIndex, endIndex);
-
+      const paginatedProdutos = produtosFiltered.slice(startIndex, endIndex);
+  
       return {
         status: 200,
         message: {
-          data: produtos,
+          data: paginatedProdutos,
           total: totalProducts,
           limit: pageSize,
           page: pageNumber
@@ -127,6 +156,7 @@ class ProductServices {
       };
     }
   }
+  
 
   async getProductById(req) {
     const { id } = req.params;
