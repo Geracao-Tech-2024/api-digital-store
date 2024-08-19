@@ -7,7 +7,7 @@ const Sequelize = require("sequelize");
 class ProductServices {
 
   async getAllProducts(req) {
-    const { limit, page, fields, match, category_ids, price_range } = req.body;
+    const { limit, page, fields, match, category_ids, price_range } = req.query;
   
     const pageNumber = parseInt(page, 10) || 1;
     const pageSize = parseInt(limit, 10) || 12;
