@@ -1,10 +1,10 @@
 const sequelize = require('./conect');
-const User = require('../models/user');
-const Category = require('../models/category');
-const Product = require('../models/product');
-const ProductImage = require('../models/productImage');
-const ProductOption = require('../models/ProductOption');
-const ProductCategory = require('../models/ProductCategory');
+const User = require('./../models/user');
+const Category = require('./../models/category');
+const Product = require('./../models/product');
+const ProductImage = require('./../models/productImage');
+const ProductOption = require('./../models/ProductOption');
+const ProductCategory = require('./../models/ProductCategory');
 
 class Database {
     constructor() {

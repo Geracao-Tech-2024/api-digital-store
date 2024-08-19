@@ -1,6 +1,6 @@
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
-const { head } = require('../app');
+const { head } = require('./../app');
 
 class JWToken {
 
