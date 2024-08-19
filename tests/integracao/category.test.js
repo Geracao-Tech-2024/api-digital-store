@@ -1,5 +1,6 @@
 const request = require('supertest');
 const app = require('./../../src/app');
+require('dotenv').config();
 
 let server;
 
@@ -30,7 +31,7 @@ describe('Category API Integration Tests', () => {
         // Obtém um token válido para autenticação
         const tokenRes = await request(app)
             .post('/v1/user/token')
-            .send({ email: 'john.doe@example.com', password: 'password123' });
+            .send({ email: process.env.email_user , password: process.env.password_user });
         token = tokenRes.body.token;
     });
 
@@ -118,7 +119,7 @@ describe('Category API Integration Tests', () => {
     describe('DELETE /v1/category/:id', () => {
         it('Deve deletar uma categoria existente', async () => {
             // tem que mudar o id para uma categoria existente no banco de dados
-            const categoryId = 71; 
+            const categoryId = 3; 
 
             const deleteRes = await request(app)
                 .delete(`/v1/category/${categoryId}`)

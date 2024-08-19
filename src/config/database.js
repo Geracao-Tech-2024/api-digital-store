@@ -14,7 +14,7 @@ class Database {
     async sincronizarDatabase() {
         try {
             // Sincronizar todos os modelos com o banco de dados
-            await this.sequelize.sync({ alter: true }); // { alter: true }
+            await this.sequelize.sync(); // { alter: true }
             console.log('Database & tables created or updated!');
         } catch (error) {
             console.error('Error creating or updating tables:', error);

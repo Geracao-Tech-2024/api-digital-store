@@ -1,5 +1,6 @@
 const request = require('supertest');
 const app = require('./../../src/app');
+require('dotenv').config()
 
 let server;
 
@@ -35,7 +36,7 @@ describe('User API Integration Tests', () => {
                     surname: 'Doe',
 
                     // tem que mudar para um email nao existente
-                    email: 'joh999@example.com',
+                    email: 'joh111@example.com',
 
                     password: 'password123',
                     confirmPassword: 'password123',
@@ -67,7 +68,7 @@ describe('User API Integration Tests', () => {
                 .send({
                     firstname: 'John',
                     surname: 'Doe',
-                    email: 'jane.doe111@example.com',
+                    email: 'jane.doe@example.com',
                     password: 'password123',
                     confirmPassword: 'password123',
                 });
@@ -83,15 +84,15 @@ describe('User API Integration Tests', () => {
 
             // Trocar o ID conforme necessário
             // ID do usuário existente no banco de dados
-            const userId = 34;
+            const userId = 1;
 
             const res = await request(app).get(`/v1/user/${userId}`);
 
             expect(res.statusCode).toEqual(200);
             expect(res.body).toHaveProperty('id', userId);
-            expect(res.body).toHaveProperty('firstname', 'Jane');
+            expect(res.body).toHaveProperty('firstname', 'John');
             expect(res.body).toHaveProperty('surname', 'Doe');
-            expect(res.body).toHaveProperty('email', 'jane.doe@example.com');
+            expect(res.body).toHaveProperty('email', 'john.doe@example.com');
         });
 
         it('Deve retornar erro se o usuário não for encontrado', async () => {
@@ -107,11 +108,11 @@ describe('User API Integration Tests', () => {
         it('Deve atualizar um usuário existente', async () => {
             // Trocar o ID conforme necessário
             // ID do usuário existente no banco de dados
-            const userId = 21;
+            const userId = 6;
 
             const tokenRes = await request(app)
                 .post('/v1/user/token')
-                .send({ email: 'john.doe@example.com', password: 'password123' });
+                .send({ email: process.env.email_user , password: process.env.password_user });
 
             const token = tokenRes.body.token;
 
@@ -130,7 +131,7 @@ describe('User API Integration Tests', () => {
         it('Deve retornar erro se o usuário não for encontrado', async () => {
             const tokenRes = await request(app)
                 .post('/v1/user/token')
-                .send({ email: 'john.doe@example.com', password: 'password123' });
+                .send({ email: process.env.email_user , password: process.env.password_user });
 
             const token = tokenRes.body.token;
 
@@ -153,11 +154,11 @@ describe('User API Integration Tests', () => {
 
             // Trocar o ID conforme necessário
             // ID do usuário existente no banco de dados
-            const userId = 54;
+            const userId = 7;
 
             const tokenRes = await request(app)
                 .post('/v1/user/token')
-                .send({ email: 'john.doe@example.com', password: 'password123' });
+                .send({ email: process.env.email_user , password: process.env.password_user });
 
             const token = tokenRes.body.token;
 
@@ -171,7 +172,7 @@ describe('User API Integration Tests', () => {
         it('Deve retornar erro se o usuário não for encontrado', async () => {
             const tokenRes = await request(app)
                 .post('/v1/user/token')
-                .send({ email: 'john.doe@example.com', password: 'password123' });
+                .send({ email: process.env.email_user , password: process.env.password_user });
 
             const token = tokenRes.body.token;
 

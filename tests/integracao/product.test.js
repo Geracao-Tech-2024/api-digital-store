@@ -1,5 +1,6 @@
 const request = require('supertest');
 const app = require('../../src/app'); // Ajuste o caminho conforme necessário
+require('dotenv').config();
 
 let server;
 let token;
@@ -7,7 +8,7 @@ let token;
 const getAuthToken = async () => {
     const response = await request(app)
         .post('/v1/user/token')
-        .send({ email: 'john.doe@example.com', password: 'password123' });
+        .send({ email: process.env.email_user , password: process.env.password_user });
     return response.body.token;
 };
 
@@ -39,7 +40,7 @@ describe('Product API Integration Tests', () => {
                     slug: 'novo-produto',
                     price: 100,
                     price_with_discount: 90,
-                    category_ids: [55,56,57], // AQUI TEM QUE TER UMA CATEGORIA EXISTENTE NO BANCO *****
+                    category_ids: [1,2,3], // AQUI TEM QUE TER UMA CATEGORIA EXISTENTE NO BANCO *****
                     images: [{ type: "image/jpg", content: 'imagem1.jpg' }],
                     options: [{
                         title: "Cor",
@@ -102,7 +103,7 @@ describe('Product API Integration Tests', () => {
                     name: 'Produto Atualizado',
                     price: 120,
                     price_with_discount: 100,
-                    category_ids: [55], // ESSA CATEGORIA TEM QUE EXISTIR NO BANCO *****
+                    category_ids: [2], // ESSA CATEGORIA TEM QUE EXISTIR NO BANCO *****
                 });
 
             expect(res.statusCode).toEqual(204);
@@ -124,7 +125,7 @@ describe('Product API Integration Tests', () => {
 
     describe('DELETE /v1/product/:id', () => {
         it('Deve deletar um produto existente', async () => {
-            const productId = 24; // TEM QUE TROCAR PRA UM ID DE PRODUTO EXISTENTE NO BANCO ********
+            const productId = 4; // TEM QUE TROCAR PRA UM ID DE PRODUTO EXISTENTE NO BANCO ********
             const res = await request(app)
                 .delete(`/v1/product/${productId}`)
                 .set('Authorization', `Bearer ${token}`);
