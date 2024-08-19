@@ -3,7 +3,7 @@
 https://api-digital-store.onrender.com
 ```
 <details>
-  <summary>Introdução à API</summary>
+  <summary>API/</summary>
 
   ### Introdução à API Digital Store
   
@@ -18,9 +18,22 @@ https://api-digital-store.onrender.com
 - **Login e Autenticação com JWT**: Garanta a segurança da sua aplicação com um sistema robusto de login e autenticação utilizando JSON Web Tokens (JWT), protegendo o acesso aos dados e operações críticas.
 
   
+</details>
+
+<details>
+  <summary>Documentação</summary>
+  
+  ```
+  https://documenter.getpostman.com/view/37358777/2sA3s9DTue
+  ```
   
 
+  
+
+  
 </details>
+
+
 
 
 ## 📋 Requirements
