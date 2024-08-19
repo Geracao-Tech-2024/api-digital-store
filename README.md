@@ -2,7 +2,7 @@
 ```
 https://api-digital-store.onrender.com/v1/product/1
 ```
-1.Como usar?
+1. Como usar?
 <details>
   <summary><strong> Fazer uma requisição GET:</strong></summary><br>
 
