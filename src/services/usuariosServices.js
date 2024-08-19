@@ -5,9 +5,6 @@ const User = require("./../models/User");
 const bcrypt = require("bcrypt");
 
 class UsuarioServices {
-  getUsuarios() {
-    return "todos os usuarios";
-  }
 
   async getUsuario(req) {
     let { id } = req.params;

@@ -1,13 +1,6 @@
 const usuarioServices =  require('./../services/usuariosServices');
 
 class userController {
-    getAllUsuarios(requisicao, resposta) {
-        try {
-            resposta.status(200).send(usuarioServices.getUsuarios())
-        } catch (erro) {
-            resposta.status(500).send(erro.message)
-        }
-    }
     async getUsuario(requisicao, resposta) {
         try {
             let busca = await usuarioServices.getUsuario(requisicao)
