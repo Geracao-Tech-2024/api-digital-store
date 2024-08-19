@@ -12,12 +12,13 @@ https://api-digital-store.onrender.com/v1/product/1
   Essa API foi desenvolvida com a colaboração de um time talentoso e dedicado, composto pelos membros **Lucas Maciel**, **Osmar Mendes**, **Marcos Levi**, **Wendell**, e **Matheus Jairo**. Juntos, eles criaram uma solução robusta e versátil, focada em atender às necessidades tanto de desenvolvedores quanto de empresas que buscam otimizar a gestão de produtos em suas plataformas digitais.
   
   ### Funcionalidades Principais
-  - **CRUD Completo**: Crie, visualize, edite e exclua produtos facilmente.
-  - **Acesso a Conteúdos**: Recupere informações detalhadas de produtos, categorias e outros dados relevantes.
-  - **Integração Simples**: Uma API fácil de usar, com endpoints intuitivos, perfeita para integração em diferentes tipos de sistemas.
+- **CRUD Completo**: Crie, visualize, edite e exclua produtos facilmente.
+- **Acesso a Conteúdos**: Recupere informações detalhadas de produtos, categorias e outros dados relevantes.
+- **Integração Simples**: Uma API fácil de usar, com endpoints intuitivos, perfeita para integração em diferentes tipos de sistemas.
+- **Login e Autenticação com JWT**: Garanta a segurança da sua aplicação com um sistema robusto de login e autenticação utilizando JSON Web Tokens (JWT), protegendo o acesso aos dados e operações críticas.
+
   
-  ### Por que usar a API Digital Store?
-  Se você busca uma maneira eficiente de gerenciar os produtos do seu e-commerce, a **API Digital Store** é a solução ideal. Desenvolvida por especialistas, ela oferece tudo o que você precisa para manter sua loja organizada, atualizada e pronta para atender seus clientes com a máxima eficiência.
+  
 
 </details>
 
