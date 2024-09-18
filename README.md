@@ -1,8 +1,4 @@
-## API hospedada
-- Link para acessar API:
-```
-https://api-digital-store.onrender.com
-```
+## API ja foi hospedada, link nao esta aqui por fins de segurança.
 
 - Documentação
 ```
